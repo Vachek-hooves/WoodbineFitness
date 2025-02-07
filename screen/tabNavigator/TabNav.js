@@ -5,10 +5,10 @@ const Tab = createBottomTabNavigator();
 
 const TabNav = () => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Activities" component={Activities} />
+    <Tab.Navigator screenOptions={{headerShown: false}}>
       <Tab.Screen name="Game" component={Game} />
       <Tab.Screen name="Plan" component={Plan} />
+      <Tab.Screen name="Activities" component={Activities} />
       <Tab.Screen name="Settings" component={Settings} />
       <Tab.Screen name="Statistic" component={Statistic} />
     </Tab.Navigator>

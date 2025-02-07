@@ -28,7 +28,7 @@ const LogIn = ({navigation}) => {
     try {
       const savedNickname = await AsyncStorage.getItem('userNickname');
       const savedPhoto = await AsyncStorage.getItem('userPhoto');
-      
+
       if (savedNickname && savedPhoto) {
         setNickname(savedNickname);
         setPhoto(savedPhoto);
@@ -61,7 +61,7 @@ const LogIn = ({navigation}) => {
     });
   };
 
-  const handleNicknameChange = async (text) => {
+  const handleNicknameChange = async text => {
     setNickname(text);
     try {
       await AsyncStorage.setItem('userNickname', text);
@@ -93,7 +93,7 @@ const LogIn = ({navigation}) => {
       await AsyncStorage.setItem('userPhoto', photo);
       setIsAccountCreated(true);
       console.log('Account created successfully');
-      navigation.navigate('Main');
+      navigation.navigate('TabNav', {screen: 'Activities'});
     } catch (error) {
       console.error('Error creating account:', error);
     }
@@ -105,10 +105,9 @@ const LogIn = ({navigation}) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.container}>
-          <TouchableOpacity 
-            style={styles.deleteAccount} 
-            onPress={handleDeleteAccount}
-          >
+          <TouchableOpacity
+            style={styles.deleteAccount}
+            onPress={handleDeleteAccount}>
             <Text style={styles.deleteText}>Delete account</Text>
           </TouchableOpacity>
 
@@ -138,10 +137,9 @@ const LogIn = ({navigation}) => {
             />
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.buttonOuterBorder}
-            onPress={handleCreateAccount}
-          >
+            onPress={handleCreateAccount}>
             <View style={styles.buttonInnerBorder}>
               <Text style={styles.buttonText}>
                 {isAccountCreated ? 'Continue' : 'Create account'}
