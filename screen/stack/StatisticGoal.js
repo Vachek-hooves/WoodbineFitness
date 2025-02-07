@@ -8,6 +8,9 @@ const StatisticGoal = ({route}) => {
   const [seconds, setSeconds] = useState(0);
   const [notification, setNotification] = useState(false);
 
+  // Check if timer has valid time set
+  const isTimeSet = minutes > 0 || seconds > 0;
+
   const handleTimeChange = (type, increment) => {
     if (type === 'minutes') {
       if (increment) {
@@ -21,6 +24,13 @@ const StatisticGoal = ({route}) => {
       } else {
         setSeconds(prev => (prev > 0 ? prev - 1 : 59));
       }
+    }
+  };
+
+  const handleStart = () => {
+    if (isTimeSet) {
+      // Add your start logic here
+      console.log('Starting timer:', { minutes, seconds });
     }
   };
 
@@ -82,9 +92,24 @@ const StatisticGoal = ({route}) => {
           </Pressable>
 
           {/* Start Button */}
-          <Pressable style={styles.startButton}>
-            <View style={styles.startButtonInner}>
-              <Text style={styles.startText}>Start</Text>
+          <Pressable 
+            style={[
+              styles.startButton,
+              !isTimeSet && styles.startButtonDisabled
+            ]}
+            onPress={handleStart}
+            disabled={!isTimeSet}
+          >
+            <View style={[
+              styles.startButtonInner,
+              !isTimeSet && styles.startButtonInnerDisabled
+            ]}>
+              <Text style={[
+                styles.startText,
+                !isTimeSet && styles.startTextDisabled
+              ]}>
+                Start
+              </Text>
             </View>
           </Pressable>
         </ScrollView>
@@ -182,6 +207,9 @@ const styles = StyleSheet.create({
     borderColor: '#FF0000',
     borderRadius: 30,
   },
+  startButtonDisabled: {
+    borderColor: '#666666',
+  },
   startButtonInner: {
     flex: 1,
     borderWidth: 2,
@@ -190,9 +218,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  startButtonInnerDisabled: {
+    borderColor: '#666666',
+  },
   startText: {
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  startTextDisabled: {
+    color: '#666666',
   },
 });
