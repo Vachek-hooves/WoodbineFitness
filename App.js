@@ -1,10 +1,12 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {Loader, LogIn, Welcome} from './screen/route';
-const Stack = createNativeStackNavigator();
 import {StoreProvider} from './store/context';
 import Main from './screen/main/Main';
 import TabNav from './screen/tabNavigator/TabNav';
+import ActivitiesInstraction from './screen/stack/ActivitiesInstraction';
+
+const Stack = createNativeStackNavigator();
 
 function App() {
   return (
@@ -16,6 +18,10 @@ function App() {
           <Stack.Screen name="Welcome" component={Welcome} />
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="TabNav" component={TabNav} />
+          <Stack.Screen
+            name="ActivitiesInstraction"
+            component={ActivitiesInstraction}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </StoreProvider>
