@@ -2,7 +2,7 @@ import {StyleSheet, Text, View, Pressable, ScrollView} from 'react-native';
 import React, {useState} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 
-const StatisticGoal = ({route}) => {
+const StatisticGoal = ({navigation, route}) => {
   const {activity} = route.params;
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
@@ -30,6 +30,10 @@ const StatisticGoal = ({route}) => {
   const handleStart = () => {
     if (isTimeSet) {
       // Add your start logic here
+      navigation.navigate('TimerCount', {
+        minutes,
+        seconds,
+      });
       console.log('Starting timer:', { minutes, seconds });
     }
   };
