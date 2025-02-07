@@ -8,13 +8,32 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 import {launchImageLibrary} from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LogIn = () => {
   const [photo, setPhoto] = useState(null);
   const [nickname, setNickname] = useState('');
+  console.log(photo, nickname);
+
+  // Load user data when component mounts
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      const savedNickname = await AsyncStorage.getItem('userNickname');
+      const savedPhoto = await AsyncStorage.getItem('userPhoto');
+      
+      if (savedNickname) setNickname(savedNickname);
+      if (savedPhoto) setPhoto(savedPhoto);
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
+  };
 
   const handleImagePicker = () => {
     const options = {
@@ -22,14 +41,60 @@ const LogIn = () => {
       quality: 1,
     };
 
-    launchImageLibrary(options, response => {
+    launchImageLibrary(options, async response => {
       if (response.didCancel) {
         return;
       }
       if (response.assets && response.assets[0]) {
-        setPhoto(response.assets[0].uri);
+        const photoUri = response.assets[0].uri;
+        setPhoto(photoUri);
+        try {
+          await AsyncStorage.setItem('userPhoto', photoUri);
+        } catch (error) {
+          console.error('Error saving photo:', error);
+        }
       }
     });
+  };
+
+  const handleNicknameChange = async (text) => {
+    setNickname(text);
+    try {
+      await AsyncStorage.setItem('userNickname', text);
+    } catch (error) {
+      console.error('Error saving nickname:', error);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await AsyncStorage.removeItem('userNickname');
+      await AsyncStorage.removeItem('userPhoto');
+      setNickname('');
+      setPhoto(null);
+    } catch (error) {
+      console.error('Error deleting user data:', error);
+    }
+  };
+
+  const handleCreateAccount = async () => {
+    if (!nickname || !photo) {
+      // You might want to add some user feedback here
+      console.log('Please provide both nickname and photo');
+      return;
+    }
+
+    try {
+      // Save user data
+      await AsyncStorage.setItem('userNickname', nickname);
+      await AsyncStorage.setItem('userPhoto', photo);
+      console.log('Account created successfully');
+      
+      // Optional: Add navigation to next screen
+      // navigation.navigate('NextScreen');
+    } catch (error) {
+      console.error('Error creating account:', error);
+    }
   };
 
   return (
@@ -38,7 +103,10 @@ const LogIn = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.container}>
-          <TouchableOpacity style={styles.deleteAccount}>
+          <TouchableOpacity 
+            style={styles.deleteAccount} 
+            onPress={handleDeleteAccount}
+          >
             <Text style={styles.deleteText}>Delete account</Text>
           </TouchableOpacity>
 
@@ -64,11 +132,14 @@ const LogIn = () => {
               placeholder="Nickname"
               placeholderTextColor="#666"
               value={nickname}
-              onChangeText={setNickname}
+              onChangeText={handleNicknameChange}
             />
           </View>
 
-          <TouchableOpacity style={styles.buttonOuterBorder}>
+          <TouchableOpacity 
+            style={styles.buttonOuterBorder}
+            onPress={handleCreateAccount}
+          >
             <View style={styles.buttonInnerBorder}>
               <Text style={styles.buttonText}>Create account</Text>
             </View>

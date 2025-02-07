@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {Loader, LogIn, Welcome} from './screen/route';
 const Stack = createNativeStackNavigator();
 import {StoreProvider} from './store/context';
+import Main from './screen/main/Main';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Stack.Screen name="Loader" component={Loader} />
           <Stack.Screen name="LogIn" component={LogIn} />
           <Stack.Screen name="Welcome" component={Welcome} />
+          <Stack.Screen name="Main" component={Main} />
         </Stack.Navigator>
       </NavigationContainer>
     </StoreProvider>
