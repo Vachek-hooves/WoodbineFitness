@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import CustomGradient from '../../components/Layout/CustomGradient';
 
 const LogIn = () => {
   return (
-    <View>
-      <Text>LogIn</Text>
-    </View>
-  )
-}
+    <CustomGradient>
+      
+    </CustomGradient>
+  );
+};
 
-export default LogIn
+export default LogIn;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

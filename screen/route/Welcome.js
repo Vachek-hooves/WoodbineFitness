@@ -1,49 +1,54 @@
-import { StyleSheet, Text, View, TouchableOpacity, Dimensions,ScrollView } from 'react-native'
-import React from 'react'
-import LinearGradient from 'react-native-linear-gradient'
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
+import React from 'react';
+import CustomGradient from '../../components/Layout/CustomGradient';
 
 const Welcome = ({navigation}) => {
-const handleBegin = () => {
-  navigation.navigate('LogIn')
-}
+  const handleBegin = () => {
+    navigation.navigate('LogIn');
+  };
   return (
-    <LinearGradient 
-      colors={['#2C0203', '#150B0B']} 
-      style={styles.container}
-    >
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
+    <CustomGradient>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{flexGrow: 1}}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.title}>WOODBINE{'\n'}FITNESS</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>
+            Our mobile app is for those who want to stay active and exercise
+            outdoors 🌿🏃‍♂️. We help you stay in shape 💪 and enjoy nature 🌞 by
+            offering personalized workouts 🏋️‍♂️, diverse sports activities 🚴‍♀️🏄‍♂️,
+            and engaging mini-games 🎮✨.
+          </Text>
+        </View>
 
-      <View style={styles.contentContainer}>
-        <Text style={styles.title}>
-          WOODBINE{'\n'}FITNESS
-        </Text>
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.text}>
-        Our mobile app is for those who want to stay active and exercise outdoors 🌿🏃‍♂️. We help you stay in shape 💪 and enjoy nature 🌞 by offering personalized workouts 🏋️‍♂️, diverse sports activities 🚴‍♀️🏄‍♂️, and engaging mini-games 🎮✨.
-        </Text>
-      </View>
-      
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonOuterBorder} onPress={handleBegin}>
-          <View style={styles.buttonInnerBorder}>
-            <Text style={styles.buttonText}>Begin</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.buttonOuterBorder}
+            onPress={handleBegin}>
+            <View style={styles.buttonInnerBorder}>
+              <Text style={styles.buttonText}>Begin</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
-    </LinearGradient>
-  )
-}
+    </CustomGradient>
+  );
+};
 
-export default Welcome
+export default Welcome;
 
-const { width } = Dimensions.get('window')
+const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   textContainer: {
     paddingHorizontal: 20,
     paddingVertical: 20,
@@ -93,6 +98,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
-    
   },
-})
+});

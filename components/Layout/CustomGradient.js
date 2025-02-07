@@ -1,14 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
-const CustomGradient = () => {
+const CustomGradient = ({children}) => {
   return (
-    <View>
-      <Text>CustomGradient</Text>
-    </View>
-  )
-}
+    <LinearGradient colors={['#2C0203', '#150B0B']} style={styles.container}>
+      {children}
+    </LinearGradient>
+  );
+};
 
-export default CustomGradient
+export default CustomGradient;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
