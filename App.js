@@ -8,7 +8,7 @@ function App() {
   return (
     <StoreProvider>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Loader" component={Loader} />
           <Stack.Screen name="LogIn" component={LogIn} />
           <Stack.Screen name="Welcome" component={Welcome} />
