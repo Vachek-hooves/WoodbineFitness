@@ -13,9 +13,10 @@ import CustomGradient from '../../components/Layout/CustomGradient';
 import {launchImageLibrary} from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const LogIn = () => {
+const LogIn = ({navigation}) => {
   const [photo, setPhoto] = useState(null);
   const [nickname, setNickname] = useState('');
+  const [isAccountCreated, setIsAccountCreated] = useState(false);
   console.log(photo, nickname);
 
   // Load user data when component mounts
@@ -28,8 +29,11 @@ const LogIn = () => {
       const savedNickname = await AsyncStorage.getItem('userNickname');
       const savedPhoto = await AsyncStorage.getItem('userPhoto');
       
-      if (savedNickname) setNickname(savedNickname);
-      if (savedPhoto) setPhoto(savedPhoto);
+      if (savedNickname && savedPhoto) {
+        setNickname(savedNickname);
+        setPhoto(savedPhoto);
+        setIsAccountCreated(true);
+      }
     } catch (error) {
       console.error('Error loading user data:', error);
     }
@@ -72,6 +76,7 @@ const LogIn = () => {
       await AsyncStorage.removeItem('userPhoto');
       setNickname('');
       setPhoto(null);
+      setIsAccountCreated(false);
     } catch (error) {
       console.error('Error deleting user data:', error);
     }
@@ -79,19 +84,16 @@ const LogIn = () => {
 
   const handleCreateAccount = async () => {
     if (!nickname || !photo) {
-      // You might want to add some user feedback here
       console.log('Please provide both nickname and photo');
       return;
     }
 
     try {
-      // Save user data
       await AsyncStorage.setItem('userNickname', nickname);
       await AsyncStorage.setItem('userPhoto', photo);
+      setIsAccountCreated(true);
       console.log('Account created successfully');
-      
-      // Optional: Add navigation to next screen
-      // navigation.navigate('NextScreen');
+      navigation.navigate('Main');
     } catch (error) {
       console.error('Error creating account:', error);
     }
@@ -141,7 +143,9 @@ const LogIn = () => {
             onPress={handleCreateAccount}
           >
             <View style={styles.buttonInnerBorder}>
-              <Text style={styles.buttonText}>Create account</Text>
+              <Text style={styles.buttonText}>
+                {isAccountCreated ? 'Continue' : 'Create account'}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
