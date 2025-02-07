@@ -43,7 +43,7 @@ const activities = [
   },
 ];
 
-const Activities = () => {
+const Activities = ({ navigation }) => {
   return (
     <CustomGradient>
       <ScrollView>
@@ -53,7 +53,9 @@ const Activities = () => {
               <TouchableOpacity
                 key={activity.id}
                 style={styles.activityCard}
-                onPress={() => console.log(`Selected ${activity.name}`)}>
+                onPress={() => navigation.navigate('ActivitiesInstraction', {
+                  activityId: activity.id
+                })}>
                 <View style={styles.imageContainer}>
                   <Image
                     source={activity.image}
