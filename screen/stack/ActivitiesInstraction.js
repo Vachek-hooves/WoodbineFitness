@@ -13,15 +13,17 @@ const ActivitiesInstraction = ({ route }) => {
   // Find the current text content based on active tab
   const currentContent = activity.text.find(item => item.type === activeTab);
 
-  const tabs = ['Description', 'Instructions', 'Tips', 'Gear'];
+  const topTabs = ['Description', 'Instructions'];
+  const bottomTabs = ['Tips', 'Gear'];
 
   return (
     <CustomGradient>
       <View style={styles.container}>
         <Text style={styles.title}>{activity.name.toUpperCase()}</Text>
         
-        <View style={styles.tabContainer}>
-          {tabs.map((tab) => (
+        {/* Top Tabs */}
+        <View style={styles.topTabContainer}>
+          {topTabs.map((tab) => (
             <TouchableOpacity
               key={tab}
               style={[
@@ -40,14 +42,39 @@ const ActivitiesInstraction = ({ route }) => {
           ))}
         </View>
 
+        {/* Content */}
         <ScrollView 
           style={styles.contentContainer}
           showsVerticalScrollIndicator={false}
         >
+          <Text style={styles.contentLabel}>
+            {activeTab}:
+          </Text>
           <Text style={styles.contentText}>
             {currentContent.text}
           </Text>
         </ScrollView>
+
+        {/* Bottom Tabs */}
+        <View style={styles.bottomTabContainer}>
+          {bottomTabs.map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              style={[
+                styles.tabButton,
+                activeTab === tab && styles.activeTabButton,
+              ]}
+              onPress={() => setActiveTab(tab)}
+            >
+              <Text style={[
+                styles.tabText,
+                activeTab === tab && styles.activeTabText
+              ]}>
+                {tab}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </CustomGradient>
   );
@@ -65,21 +92,32 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
-  tabContainer: {
+  topTabContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: 20,
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 30,
+  },
+  bottomTabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    bottom: 100,
+    left: 0,
+    right: 0,
   },
   tabButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderWidth: 2,
     borderColor: '#FF0000',
-    borderRadius: 20,
-    minWidth: 80,
+    borderRadius: 25,
+    minWidth: 120,
     alignItems: 'center',
   },
   activeTabButton: {
@@ -87,8 +125,8 @@ const styles = StyleSheet.create({
   },
   tabText: {
     color: '#FF0000',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '600',
   },
   activeTabText: {
     color: 'white',
@@ -96,7 +134,12 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
+  },
+  contentLabel: {
+    color: '#FF0000',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 10,
   },
   contentText: {
     color: 'white',
