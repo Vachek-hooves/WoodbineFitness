@@ -5,6 +5,8 @@ import {StoreProvider} from './store/context';
 import Main from './screen/main/Main';
 import TabNav from './screen/tabNavigator/TabNav';
 import ActivitiesInstraction from './screen/stack/ActivitiesInstraction';
+import StatisticGoal from './screen/stack/StatisticGoal';
+import StatisticTrain from './screen/stack/StatisticTrain';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +24,8 @@ function App() {
             name="ActivitiesInstraction"
             component={ActivitiesInstraction}
           />
+          <Stack.Screen name="StatisticGoal" component={StatisticGoal} />
+          <Stack.Screen name="StatisticTrain" component={StatisticTrain} />
         </Stack.Navigator>
       </NavigationContainer>
     </StoreProvider>

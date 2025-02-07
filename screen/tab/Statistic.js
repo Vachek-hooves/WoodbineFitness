@@ -19,9 +19,13 @@ const Statistic = ({navigation}) => {
 
   const handleBegin = () => {
     if (activeTab === 'Goal') {
-      navigation.navigate('Goal', {activity: selectedActivity});
+      navigation.navigate('StatisticGoal', { 
+        activity: selectedActivity,
+      });
     } else {
-      navigation.navigate('TrainUp', {activity: selectedActivity});
+      navigation.navigate('StatisticTrain', { 
+        activity: selectedActivity,
+      });
     }
   };
 
