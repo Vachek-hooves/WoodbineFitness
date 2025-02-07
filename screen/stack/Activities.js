@@ -58,7 +58,7 @@ const Activities = () => {
                   <Image
                     source={activity.image}
                     style={styles.activityImage}
-                    resizeMode="cover"
+                    // resizeMode="cover"
                   />
                 </View>
                 <Text style={styles.activityName}>{activity.name}</Text>
@@ -93,19 +93,25 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: 'center',
     marginVertical: 20,
+    padding: 4,
+    borderWidth: 2,
+    borderColor: '#F52629',
+    borderRadius: 20,
   },
   imageContainer: {
     width: '100%',
     height: '100%',
     borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#FF0000',
+    // borderWidth: 2,
+    // borderColor: '#FF0000',
     overflow: 'hidden',
   },
   activityImage: {
     width: '100%',
     height: '100%',
     // tintColor: '#FF0000',
+    borderRadius: 20,
+    padding: 2,
   },
   activityName: {
     color: 'white',
