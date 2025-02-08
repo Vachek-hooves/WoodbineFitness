@@ -18,6 +18,7 @@ const TimerCount = ({ route, navigation }) => {
       }, 1000)
     } else if (timeLeft === 0) {
       setIsActive(false)
+      setIsPaused(false)
       clearInterval(interval)
     }
     return () => clearInterval(interval)
@@ -38,12 +39,20 @@ const TimerCount = ({ route, navigation }) => {
   }
 
   const handleStop = () => {
-    setIsActive(false)
-    setTimeLeft(0)
+    setIsPaused(true)
+    setTimeLeft(totalSeconds)
+    setIsActive(true)
   }
 
   const handleAddTime = () => {
-    setTimeLeft(timeLeft => timeLeft + 60) // Add 1 minute
+    setTimeLeft(timeLeft => timeLeft + 60)
+  }
+
+  const getPlayPauseIcon = () => {
+    if (isPaused || !isActive) {
+      return '▶'
+    }
+    return '❚❚'
   }
 
   return (
@@ -83,7 +92,7 @@ const TimerCount = ({ route, navigation }) => {
               onPress={handlePauseResume}>
               <View style={styles.buttonInner}>
                 <Text style={styles.buttonText}>
-                  {isPaused ? '▶' : '❚❚'}
+                  {getPlayPauseIcon()}
                 </Text>
               </View>
             </Pressable>
