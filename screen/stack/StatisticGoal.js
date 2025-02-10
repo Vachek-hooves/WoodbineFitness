@@ -33,6 +33,7 @@ const StatisticGoal = ({navigation, route}) => {
       navigation.navigate('TimerCount', {
         minutes,
         seconds,
+        activity
       });
       console.log('Starting timer:', { minutes, seconds });
     }
