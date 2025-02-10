@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, Image, Dimensions, PanResponder, Animated } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Image, Dimensions, PanResponder, Animated, Modal } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 
@@ -12,6 +12,7 @@ const BIRD_SIZE = 40;
 const GamePlay = ({ navigation, route }) => {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const playerPosition = useRef(new Animated.ValueXY({ x: 50, y: SCREEN_HEIGHT - 300 })).current;
   const [platforms, setPlatforms] = useState([]);
   const [stars, setStars] = useState([]);
@@ -210,6 +211,11 @@ const GamePlay = ({ navigation, route }) => {
 
   const handleGameOver = () => {
     setGameOver(true);
+    setShowModal(true);
+  };
+
+  const handleExit = () => {
+    setShowModal(false);
     navigation.navigate('GameLevels');
   };
 
@@ -277,6 +283,30 @@ const GamePlay = ({ navigation, route }) => {
             style={styles.swipeIcon}
           />
         </View>
+
+        {/* Game Over Modal */}
+        <Modal
+          transparent={true}
+          visible={showModal}
+          animationType="fade"
+          onRequestClose={handleExit}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>
+                Player catch the bird instead star.{'\n'}Game is over!
+              </Text>
+              <Pressable
+                style={styles.exitButton}
+                onPress={handleExit}
+              >
+                <View style={styles.exitButtonInner}>
+                  <Text style={styles.exitButtonText}>Exit</Text>
+                </View>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
     </CustomGradient>
   );
@@ -349,5 +379,49 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#FF0000',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#1a1a1a',
+    padding: 20,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    alignItems: 'center',
+    width: '80%',
+  },
+  modalText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 24,
+  },
+  exitButton: {
+    width: '100%',
+    height: 50,
+    padding: 2,
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    borderRadius: 25,
+  },
+  exitButtonInner: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 23,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FF0000',
+  },
+  exitButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
