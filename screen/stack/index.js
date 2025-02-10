@@ -5,6 +5,7 @@ import Settings from '../tab/Settings';
 import Statistic from '../tab/Statistic';
 import PlanWorkout from './PlanWorkout';
 import PlanWorkoutBegin from './PlanWorkoutBegin';
+import GameLevels from './GameLevels';
 
 export {
   Activities,
@@ -14,4 +15,5 @@ export {
   Statistic,
   PlanWorkout,
   PlanWorkoutBegin,
+  GameLevels,
 };

@@ -11,6 +11,7 @@ import TimerScreen from './screen/stack/TimerScreen';
 import TimerCount from './screen/stack/TimerCount';
 import PlanWorkout from './screen/stack/PlanWorkout';
 import PlanWorkoutBegin from './screen/stack/PlanWorkoutBegin';
+import {GameLevels} from './screen/stack';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ function App() {
           <Stack.Screen name="TimerCount" component={TimerCount} />
           <Stack.Screen name="PlanWorkout" component={PlanWorkout} />
           <Stack.Screen name="PlanWorkoutBegin" component={PlanWorkoutBegin} />
+          <Stack.Screen name="GameLevels" component={GameLevels} />
         </Stack.Navigator>
       </NavigationContainer>
     </StoreProvider>
