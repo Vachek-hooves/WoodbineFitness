@@ -41,7 +41,7 @@ const GamePlay = ({ navigation, route }) => {
       if (!gameOver) {
         spawnBird();
       }
-    }, 3500); // Spawn bird every 3.5 seconds
+    }, 6500); // Spawn bird every 3.5 seconds
 
     return () => clearInterval(birdSpawnInterval);
   }, [gameOver]);
@@ -49,9 +49,10 @@ const GamePlay = ({ navigation, route }) => {
   const startGame = () => {
     // Initialize platforms with more spread out X positions
     const initialPlatforms = [
-      { x: 0, y: SCREEN_HEIGHT - 150, width: 100, hasStar: true },
-      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 250, width: 100, hasStar: true },
-      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 350, width: 100, hasStar: true },
+      { x: 0, y: SCREEN_HEIGHT - 200, width: 100, hasStar: true },
+      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 300, width: 100, hasStar: true },
+      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 400, width: 100, hasStar: true },
+      { x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT - 550, width: 100, hasStar: true },
     ];
     setPlatforms(initialPlatforms);
 
@@ -214,7 +215,14 @@ const GamePlay = ({ navigation, route }) => {
     setShowModal(true);
   };
 
-  const handleExit = () => {
+  const handleTryAgain = () => {
+    setShowModal(false);
+    setGameOver(false);
+    startGame(); // Reset the game
+    setScore(0);
+  };
+
+  const handleRevisit = () => {
     setShowModal(false);
     navigation.navigate('GameLevels');
   };
@@ -284,25 +292,46 @@ const GamePlay = ({ navigation, route }) => {
           />
         </View>
 
-        {/* Game Over Modal */}
+        {/* Updated Game Over Modal */}
         <Modal
           transparent={true}
           visible={showModal}
           animationType="fade"
-          onRequestClose={handleExit}
+          onRequestClose={handleRevisit}
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
+              {/* Top Avatar */}
+              <Image
+                source={require('../../assets/image/game/avatar-top.png')}
+                style={styles.topAvatar}
+              />
+              
               <Text style={styles.modalText}>
-                Player catch the bird instead star.{'\n'}Game is over!
+                Not this time... But the{'\n'}next run will be{'\n'}legendary!
               </Text>
+
+              {/* Bottom Avatar */}
+              <Image
+                source={require('../../assets/image/game/avatar-bottom.png')}
+                style={styles.bottomAvatar}
+              />
+
+              {/* Buttons */}
               <Pressable
-                style={styles.exitButton}
-                onPress={handleExit}
+                style={styles.tryAgainButton}
+                onPress={handleTryAgain}
               >
-                <View style={styles.exitButtonInner}>
-                  <Text style={styles.exitButtonText}>Exit</Text>
+                <View style={styles.tryAgainInner}>
+                  <Text style={styles.buttonText}>Try again</Text>
                 </View>
+              </Pressable>
+
+              <Pressable
+                style={styles.revisitButton}
+                onPress={handleRevisit}
+              >
+                <Text style={styles.buttonText}>Revisit</Text>
               </Pressable>
             </View>
           </View>
@@ -321,7 +350,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 50,
   },
   iconButton: {
     width: 50,
@@ -393,24 +423,40 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#FF0000',
     alignItems: 'center',
-    width: '80%',
+    width: '85%',
+  },
+  topAvatar: {
+    width: 60,
+    height: 130,
+    tintColor: '#FF0000',
+    marginBottom: 20,
+    position: 'absolute',
+    top: -130,
+    left: 0,
+  },
+  bottomAvatar: {
+    width: 100,
+    height: 130,
+    tintColor: '#FF0000',
+    marginVertical: 20,
   },
   modalText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 24,
     textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 24,
+    fontWeight: '600',
+    lineHeight: 32,
   },
-  exitButton: {
+  tryAgainButton: {
     width: '100%',
     height: 50,
     padding: 2,
     borderWidth: 2,
     borderColor: '#FF0000',
     borderRadius: 25,
+    marginBottom: 10,
   },
-  exitButtonInner: {
+  tryAgainInner: {
     flex: 1,
     backgroundColor: '#1a1a1a',
     borderRadius: 23,
@@ -419,7 +465,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#FF0000',
   },
-  exitButtonText: {
+  revisitButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#FF0000',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
