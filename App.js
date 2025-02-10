@@ -9,6 +9,7 @@ import StatisticGoal from './screen/stack/StatisticGoal';
 import StatisticTrain from './screen/stack/StatisticTrain';
 import TimerScreen from './screen/stack/TimerScreen';
 import TimerCount from './screen/stack/TimerCount';
+import PlanWorkout from './screen/stack/PlanWorkout';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ function App() {
           <Stack.Screen name="StatisticTrain" component={StatisticTrain} />
           <Stack.Screen name="Timer" component={TimerScreen} />
           <Stack.Screen name="TimerCount" component={TimerCount} />
+          <Stack.Screen name="PlanWorkout" component={PlanWorkout} />
         </Stack.Navigator>
       </NavigationContainer>
     </StoreProvider>

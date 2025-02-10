@@ -15,6 +15,7 @@ const Plan = ({navigation}) => {
   const handleActivityPress = activity => {
     // Add navigation or activity selection logic here
     console.log('Selected activity:', activity);
+    navigation.navigate('PlanWorkout', {activity});
   };
 
   return (
