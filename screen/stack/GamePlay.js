@@ -8,111 +8,162 @@ const PLAYER_SIZE = 50;
 const PLATFORM_HEIGHT = 20;
 const STAR_SIZE = 30;
 const BIRD_SIZE = 40;
+const GRAVITY = 0.5;
+const JUMP_FORCE = -15;
 
 const GamePlay = ({ navigation, route }) => {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const playerPosition = useRef(new Animated.ValueXY({ x: 50, y: SCREEN_HEIGHT - 200 })).current;
+  const [isSoundOn, setIsSoundOn] = useState(true);
+  const [velocity, setVelocity] = useState(0);
+  const [isJumping, setIsJumping] = useState(false);
+  
+  // Use Animated.ValueXY for player position
+  const playerPosition = useRef(new Animated.ValueXY({ 
+    x: 50, 
+    y: SCREEN_HEIGHT - 200 
+  })).current;
+
+  // Game elements state
   const [platforms, setPlatforms] = useState([]);
   const [stars, setStars] = useState([]);
   const [birds, setBirds] = useState([]);
-  const [isSoundOn, setIsSoundOn] = useState(true);
 
-  // Initialize game elements
+  // Initialize game
   useEffect(() => {
     startGame();
-  }, []);
-
-  const startGame = () => {
-    // Initialize platforms
-    const initialPlatforms = [
-      { x: 0, y: SCREEN_HEIGHT - 150, width: 100 },
-      { x: 150, y: SCREEN_HEIGHT - 250, width: 100 },
-      { x: 300, y: SCREEN_HEIGHT - 350, width: 100 },
-    ];
-    setPlatforms(initialPlatforms);
-
-    // Initialize stars
-    const initialStars = [
-      { x: 100, y: SCREEN_HEIGHT - 300 },
-      { x: 250, y: SCREEN_HEIGHT - 400 },
-    ];
-    setStars(initialStars);
-
-    // Initialize birds
-    const initialBirds = [
-      { x: SCREEN_WIDTH, y: SCREEN_HEIGHT - 300, direction: -1 },
-    ];
-    setBirds(initialBirds);
-  };
-
-  // Handle swipe gestures
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: (_, gesture) => {
-      if (gesture.dy < -20) { // Swipe up
-        jump();
-      } else if (gesture.dy > 20) { // Swipe down
-        moveDown();
-      }
-    },
-  });
-
-  const jump = () => {
-    Animated.timing(playerPosition.y, {
-      toValue: playerPosition.y._value - 100,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const moveDown = () => {
-    Animated.timing(playerPosition.y, {
-      toValue: playerPosition.y._value + 100,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  // Game loop
-  useEffect(() => {
     const gameLoop = setInterval(() => {
       if (!gameOver) {
-        updateGame();
+        updateGameState();
       }
     }, 16); // ~60fps
 
     return () => clearInterval(gameLoop);
-  }, [gameOver, platforms, stars, birds]);
+  }, []);
 
-  const updateGame = () => {
-    // Update bird positions
-    setBirds(prevBirds => 
-      prevBirds.map(bird => ({
+  const startGame = () => {
+    // Initialize with multiple platforms
+    const initialPlatforms = Array(5).fill(0).map((_, index) => ({
+      x: index * (SCREEN_WIDTH / 2),
+      y: SCREEN_HEIGHT - 150 - (index * 100),
+      width: 120
+    }));
+    setPlatforms(initialPlatforms);
+
+    // Initialize stars above platforms
+    const initialStars = initialPlatforms.map(platform => ({
+      x: platform.x + platform.width / 2,
+      y: platform.y - 100
+    }));
+    setStars(initialStars);
+
+    // Initialize birds
+    spawnBird();
+  };
+
+  const spawnBird = () => {
+    const newBird = {
+      x: SCREEN_WIDTH,
+      y: Math.random() * (SCREEN_HEIGHT - 200) + 100,
+      speed: Math.random() * 3 + 2
+    };
+    setBirds(prev => [...prev, newBird]);
+  };
+
+  const updateGameState = () => {
+    // Apply gravity to player
+    const newVelocity = velocity + GRAVITY;
+    setVelocity(newVelocity);
+    
+    const newY = playerPosition.y._value + newVelocity;
+    playerPosition.y.setValue(Math.min(newY, SCREEN_HEIGHT - PLAYER_SIZE));
+
+    // Move platforms left
+    setPlatforms(prevPlatforms => {
+      const newPlatforms = prevPlatforms.map(platform => ({
+        ...platform,
+        x: platform.x - 2
+      }));
+
+      // Remove platforms that are off screen and add new ones
+      if (newPlatforms[0].x < -120) {
+        newPlatforms.shift();
+        const lastPlatform = newPlatforms[newPlatforms.length - 1];
+        newPlatforms.push({
+          x: lastPlatform.x + SCREEN_WIDTH / 2,
+          y: Math.random() * (SCREEN_HEIGHT / 2) + SCREEN_HEIGHT / 3,
+          width: 120
+        });
+
+        // Add new star above the new platform
+        setStars(prevStars => [
+          ...prevStars,
+          {
+            x: lastPlatform.x + SCREEN_WIDTH / 2,
+            y: Math.random() * (SCREEN_HEIGHT / 2)
+          }
+        ]);
+      }
+      return newPlatforms;
+    });
+
+    // Move birds
+    setBirds(prevBirds => {
+      const newBirds = prevBirds.map(bird => ({
         ...bird,
-        x: bird.x + (bird.direction * 3),
-      }))
-    );
+        x: bird.x - bird.speed
+      })).filter(bird => bird.x > -BIRD_SIZE);
+
+      // Spawn new bird occasionally
+      if (Math.random() < 0.005) {
+        spawnBird();
+      }
+
+      return newBirds;
+    });
 
     // Check collisions
     checkCollisions();
   };
 
+  const jump = () => {
+    setVelocity(JUMP_FORCE);
+  };
+
   const checkCollisions = () => {
-    // Check platform collisions
     const playerX = playerPosition.x._value;
     const playerY = playerPosition.y._value;
 
-    // Check star collections
-    stars.forEach((star, index) => {
+    // Check platform collisions
+    platforms.forEach(platform => {
       if (
-        playerX < star.x + STAR_SIZE &&
-        playerX + PLAYER_SIZE > star.x &&
-        playerY < star.y + STAR_SIZE &&
-        playerY + PLAYER_SIZE > star.y
+        playerY + PLAYER_SIZE > platform.y &&
+        playerY + PLAYER_SIZE < platform.y + PLATFORM_HEIGHT + velocity &&
+        playerX + PLAYER_SIZE > platform.x &&
+        playerX < platform.x + platform.width &&
+        velocity > 0
       ) {
-        collectStar(index);
+        playerPosition.y.setValue(platform.y - PLAYER_SIZE);
+        setVelocity(0);
+        setIsJumping(false);
       }
+    });
+
+    // Check star collections
+    setStars(prevStars => {
+      const remainingStars = prevStars.filter(star => {
+        const collected = 
+          playerX < star.x + STAR_SIZE &&
+          playerX + PLAYER_SIZE > star.x &&
+          playerY < star.y + STAR_SIZE &&
+          playerY + PLAYER_SIZE > star.y;
+        
+        if (collected) {
+          setScore(prev => prev + 10);
+        }
+        return !collected;
+      });
+      return remainingStars;
     });
 
     // Check bird collisions
@@ -126,17 +177,25 @@ const GamePlay = ({ navigation, route }) => {
         handleGameOver();
       }
     });
-  };
 
-  const collectStar = (index) => {
-    setScore(prev => prev + 10);
-    setStars(prev => prev.filter((_, i) => i !== index));
+    // Check if player falls off screen
+    if (playerY > SCREEN_HEIGHT) {
+      handleGameOver();
+    }
   };
 
   const handleGameOver = () => {
     setGameOver(true);
-    // Navigate to game over screen or show game over modal
+    navigation.navigate('GameLevels');
   };
+
+  // Setup pan responder for touch controls
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => {
+      jump();
+    },
+  });
 
   return (
     <CustomGradient>
