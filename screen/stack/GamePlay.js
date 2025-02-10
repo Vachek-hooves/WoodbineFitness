@@ -34,6 +34,17 @@ const GamePlay = ({ navigation, route }) => {
     return () => clearInterval(gameLoop);
   }, [gameOver, platforms]);
 
+  // Add bird spawn timer
+  useEffect(() => {
+    const birdSpawnInterval = setInterval(() => {
+      if (!gameOver) {
+        spawnBird();
+      }
+    }, 3500); // Spawn bird every 3.5 seconds
+
+    return () => clearInterval(birdSpawnInterval);
+  }, [gameOver]);
+
   const startGame = () => {
     // Initialize platforms with more spread out X positions
     const initialPlatforms = [
@@ -87,11 +98,32 @@ const GamePlay = ({ navigation, route }) => {
     }).start();
   };
 
+  const spawnBird = () => {
+    const newBird = {
+      x: SCREEN_WIDTH,
+      y: Math.random() * (SCREEN_HEIGHT - 400) + 150, // Random height
+      direction: -1
+    };
+    setBirds(prev => [...prev, newBird]);
+  };
+
   const checkCollisions = () => {
     const playerX = playerPosition.x._value;
     const playerY = playerPosition.y._value;
 
-    // Check for star collisions and immediately remove collected stars
+    // Check bird collisions
+    birds.forEach(bird => {
+      if (
+        playerX < bird.x + BIRD_SIZE &&
+        playerX + PLAYER_SIZE > bird.x &&
+        playerY < bird.y + BIRD_SIZE &&
+        playerY + PLAYER_SIZE > bird.y
+      ) {
+        handleGameOver();
+      }
+    });
+
+    // Check star collisions (existing code)
     setStars(prevStars => {
       let scoreIncrement = 0;
       const updatedStars = prevStars.filter(star => {
@@ -103,9 +135,9 @@ const GamePlay = ({ navigation, route }) => {
 
         if (isColliding) {
           scoreIncrement = 10;
-          return false; // Remove the star
+          return false;
         }
-        return true; // Keep the star
+        return true;
       });
 
       if (scoreIncrement > 0) {
@@ -162,21 +194,23 @@ const GamePlay = ({ navigation, route }) => {
       return [...movedStars, ...newStars].filter(star => star.x > -STAR_SIZE);
     });
 
+    // Update birds position and remove off-screen birds
+    setBirds(prevBirds => 
+      prevBirds
+        .map(bird => ({
+          ...bird,
+          x: bird.x + (bird.direction * 3),
+        }))
+        .filter(bird => bird.x > -BIRD_SIZE) // Remove off-screen birds
+    );
+
     // Check collisions after updating positions
     checkCollisions();
-
-    // Move birds
-    setBirds(prevBirds => 
-      prevBirds.map(bird => ({
-        ...bird,
-        x: bird.x + (bird.direction * 3),
-      }))
-    );
   };
 
   const handleGameOver = () => {
     setGameOver(true);
-    // Navigate to game over screen or show game over modal
+    navigation.navigate('GameLevels');
   };
 
   return (
