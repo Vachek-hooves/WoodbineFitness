@@ -1,11 +1,18 @@
-import { StyleSheet, Text, View, Pressable, Image } from 'react-native'
-import React from 'react'
-import CustomGradient from '../../components/Layout/CustomGradient'
+import {StyleSheet, Text, View, Pressable, Image} from 'react-native';
+import React, {useEffect} from 'react';
+import CustomGradient from '../../components/Layout/CustomGradient';
+import {useStore} from '../../store/context';
 
-const Game = ({ navigation }) => {
+
+const Game = ({navigation}) => {
+  const {highScore, loadHighScore} = useStore();
   const handleStartGame = () => {
-    navigation.navigate('GameLevels') // We'll create this screen later
-  }
+    navigation.navigate('GameLevels'); // We'll create this screen later
+  };
+
+  useEffect(() => {
+    loadHighScore();
+  }, []);
 
   return (
     <CustomGradient>
@@ -29,27 +36,25 @@ const Game = ({ navigation }) => {
 
         {/* Game Description */}
         <Text style={styles.description}>
-          Dive into an exciting adventure across platforms, collecting stars! ✨ A simple 
-          yet engaging gameplay: control your character with swipe-up and swipe-down 
-          actions, jump, and avoid birds 🕊️. Each level brings new goals and increasingly 
-          challenging tasks 🎯. How many stars can you collect? Complete all the levels and 
-          become a master! 🏆
+          Dive into an exciting adventure across platforms, collecting stars! ✨
+          A simple yet engaging gameplay: control your character with swipe-up
+          and swipe-down actions, jump, and avoid birds 🕊️. Each level brings
+          new goals and increasingly challenging tasks 🎯. How many stars can
+          you collect? Complete all the levels and become a master! 🏆
         </Text>
 
         {/* Start Game Button */}
-        <Pressable 
-          style={styles.startButton}
-          onPress={handleStartGame}>
+        <Pressable style={styles.startButton} onPress={handleStartGame}>
           <View style={styles.buttonInner}>
             <Text style={styles.buttonText}>Let's Go!</Text>
           </View>
         </Pressable>
       </View>
     </CustomGradient>
-  )
-}
+  );
+};
 
-export default Game
+export default Game;
 
 const styles = StyleSheet.create({
   container: {
@@ -109,4 +114,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-})
+});

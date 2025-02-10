@@ -1,17 +1,20 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React, { useState } from 'react'
-import CustomGradient from '../../components/Layout/CustomGradient'
+import {StyleSheet, Text, View, Pressable} from 'react-native';
+import React, {useState} from 'react';
+import CustomGradient from '../../components/Layout/CustomGradient';
+import {useStore} from '../../store/context';
 
-const GameLevels = ({ navigation }) => {
-  const [currentLevel, setCurrentLevel] = useState(1) // Track the current unlocked level
-  const totalLevels = 10
-  const [totalStars, setTotalStars] = useState(0)
+const GameLevels = ({navigation}) => {
+  const {highScore} = useStore();
+  console.log(highScore);
+  const [currentLevel, setCurrentLevel] = useState(1); // Track the current unlocked level
+  const totalLevels = 10;
+  const [totalStars, setTotalStars] = useState(0);
 
-  const handleLevelPress = (level) => {
+  const handleLevelPress = level => {
     if (level <= currentLevel) {
-      navigation.navigate('GamePlay', { level })
+      navigation.navigate('GamePlay', {level});
     }
-  }
+  };
 
   return (
     <CustomGradient>
@@ -23,16 +26,16 @@ const GameLevels = ({ navigation }) => {
           </Pressable>
           <View style={styles.scoreContainer}>
             <Text style={styles.starIcon}>⭐</Text>
-            <Text style={styles.scoreText}>{totalStars}</Text>
+            <Text style={styles.scoreText}>{highScore}</Text>
           </View>
         </View>
 
         {/* Levels Grid */}
         <View style={styles.levelsGrid}>
           {[...Array(totalLevels)].map((_, index) => {
-            const level = index + 1
-            const isUnlocked = level <= currentLevel
-            
+            const level = index + 1;
+            const isUnlocked = level <= currentLevel;
+
             return (
               <Pressable
                 key={level}
@@ -41,15 +44,16 @@ const GameLevels = ({ navigation }) => {
                   isUnlocked ? styles.levelUnlocked : styles.levelLocked,
                 ]}
                 onPress={() => handleLevelPress(level)}>
-                <View style={[
-                  styles.buttonInner,
-                  isUnlocked ? styles.innerUnlocked : styles.innerLocked,
-                ]}>
+                <View
+                  style={[
+                    styles.buttonInner,
+                    isUnlocked ? styles.innerUnlocked : styles.innerLocked,
+                  ]}>
                   <Text style={styles.levelText}>{level}</Text>
                   {/* <Text style={styles.levelText}>Play</Text> */}
                 </View>
               </Pressable>
-            )
+            );
           })}
         </View>
 
@@ -61,10 +65,10 @@ const GameLevels = ({ navigation }) => {
         </Pressable>
       </View>
     </CustomGradient>
-  )
-}
+  );
+};
 
-export default GameLevels
+export default GameLevels;
 
 const styles = StyleSheet.create({
   container: {
@@ -174,4 +178,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-})
+});

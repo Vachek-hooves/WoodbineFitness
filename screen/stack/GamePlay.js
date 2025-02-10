@@ -1,6 +1,17 @@
-import { StyleSheet, Text, View, Pressable, Image, Dimensions, PanResponder, Animated, Modal } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Image,
+  Dimensions,
+  PanResponder,
+  Animated,
+  Modal,
+} from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
+import {useStore} from '../../store/context';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -11,17 +22,22 @@ const BIRD_SIZE = 40;
 const FPS = 60;
 const FRAME_TIME = 1000 / FPS;
 
-const GamePlay = ({ navigation, route }) => {
+const GamePlay = ({navigation, route}) => {
+  const {updateHighScore} = useStore();
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const playerPosition = useRef(new Animated.ValueXY({ x: 50, y: SCREEN_HEIGHT - 300 })).current;
+  const playerPosition = useRef(
+    new Animated.ValueXY({x: 50, y: SCREEN_HEIGHT - 300}),
+  ).current;
   const [platforms, setPlatforms] = useState([]);
   const [stars, setStars] = useState([]);
   const [birds, setBirds] = useState([]);
   const [isSoundOn, setIsSoundOn] = useState(true);
   const gameLoopRef = useRef(null);
   const lastUpdateRef = useRef(Date.now());
+
+  const lastSavedScoreRef = useRef(0);
 
   // Initialize game elements
   useEffect(() => {
@@ -33,29 +49,37 @@ const GamePlay = ({ navigation, route }) => {
     };
   }, []);
 
+  // Check and save score every 50 points
+  useEffect(() => {
+    if (score >= lastSavedScoreRef.current + 50) {
+      updateHighScore(score);
+      lastSavedScoreRef.current = score;
+    }
+  }, [score]);
+
   const startGame = () => {
     // Reset score when starting new game
     setScore(0);
     setGameOver(false);
-    
+
     // Initialize platforms with more spread out positions
     const initialPlatforms = [
-      { x: 0, y: SCREEN_HEIGHT - 150, width: 100 },
-      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 250, width: 100 },
-      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 350, width: 100 },
+      {x: 0, y: SCREEN_HEIGHT - 150, width: 100},
+      {x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 250, width: 100},
+      {x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 350, width: 100},
     ];
     setPlatforms(initialPlatforms);
 
     // Initialize stars
     const initialStars = [
-      { x: 100, y: SCREEN_HEIGHT - 300 },
-      { x: SCREEN_WIDTH * 0.4 + 50, y: SCREEN_HEIGHT - 400 },
+      {x: 100, y: SCREEN_HEIGHT - 300},
+      {x: SCREEN_WIDTH * 0.4 + 50, y: SCREEN_HEIGHT - 400},
     ];
     setStars(initialStars);
 
     // Initialize birds
     const initialBirds = [
-      { x: SCREEN_WIDTH, y: SCREEN_HEIGHT - 300, direction: -1 },
+      {x: SCREEN_WIDTH, y: SCREEN_HEIGHT - 300, direction: -1},
     ];
     setBirds(initialBirds);
 
@@ -79,7 +103,7 @@ const GamePlay = ({ navigation, route }) => {
     gameLoopRef.current = requestAnimationFrame(gameLoop);
   };
 
-  const updateGameState = (deltaTime) => {
+  const updateGameState = deltaTime => {
     // Reduced movement speed (from 2 to 1)
     const moveSpeed = (1 * deltaTime) / FRAME_TIME;
 
@@ -88,7 +112,7 @@ const GamePlay = ({ navigation, route }) => {
       const newPlatforms = prevPlatforms
         .map(platform => ({
           ...platform,
-          x: platform.x - moveSpeed
+          x: platform.x - moveSpeed,
         }))
         .filter(platform => platform.x > -platform.width);
 
@@ -98,7 +122,7 @@ const GamePlay = ({ navigation, route }) => {
         newPlatforms.push({
           x: SCREEN_WIDTH,
           y: Math.random() * (SCREEN_HEIGHT - 400) + 150, // Random height between 150 and SCREEN_HEIGHT-250
-          width: 100
+          width: 100,
         });
       }
 
@@ -110,7 +134,7 @@ const GamePlay = ({ navigation, route }) => {
       const newStars = prevStars
         .map(star => ({
           ...star,
-          x: star.x - moveSpeed
+          x: star.x - moveSpeed,
         }))
         .filter(star => star.x > -STAR_SIZE);
 
@@ -130,7 +154,7 @@ const GamePlay = ({ navigation, route }) => {
       const newBirds = prevBirds
         .map(bird => ({
           ...bird,
-          x: bird.x - (moveSpeed * 1.2) // Slightly faster than platforms
+          x: bird.x - moveSpeed * 1.2, // Slightly faster than platforms
         }))
         .filter(bird => bird.x > -BIRD_SIZE);
 
@@ -139,7 +163,7 @@ const GamePlay = ({ navigation, route }) => {
         newBirds.push({
           x: SCREEN_WIDTH,
           y: Math.random() * (SCREEN_HEIGHT - 400) + 150,
-          direction: -1
+          direction: -1,
         });
       }
 
@@ -158,7 +182,7 @@ const GamePlay = ({ navigation, route }) => {
     setBirds(prevBirds => {
       let shouldEndGame = false;
       const updatedBirds = prevBirds.filter(bird => {
-        const birdCollision = 
+        const birdCollision =
           playerX < bird.x + BIRD_SIZE &&
           playerX + PLAYER_SIZE > bird.x &&
           playerY < bird.y + BIRD_SIZE &&
@@ -189,7 +213,7 @@ const GamePlay = ({ navigation, route }) => {
       setStars(prevStars => {
         let scoreIncrement = 0;
         const updatedStars = prevStars.filter(star => {
-          const isColliding = 
+          const isColliding =
             playerX < star.x + STAR_SIZE &&
             playerX + PLAYER_SIZE > star.x &&
             playerY < star.y + STAR_SIZE &&
@@ -215,9 +239,11 @@ const GamePlay = ({ navigation, route }) => {
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (_, gesture) => {
-      if (gesture.dy < -20) { // Swipe up
+      if (gesture.dy < -20) {
+        // Swipe up
         jump();
-      } else if (gesture.dy > 20) { // Swipe down
+      } else if (gesture.dy > 20) {
+        // Swipe down
         moveDown();
       }
     },
@@ -242,9 +268,10 @@ const GamePlay = ({ navigation, route }) => {
   const handleGameOver = () => {
     setGameOver(true);
     setShowModal(true);
-    setScore(0); // Reset score to 0 when game over
+    // Final score update
+    updateHighScore(score);
+    setScore(0);
     
-    // Stop the game loop
     if (gameLoopRef.current) {
       cancelAnimationFrame(gameLoopRef.current);
     }
@@ -267,17 +294,16 @@ const GamePlay = ({ navigation, route }) => {
       <View style={styles.container} {...panResponder.panHandlers}>
         {/* Header */}
         <View style={styles.header}>
-          <Pressable 
+          <Pressable
             style={styles.iconButton}
             onPress={() => setIsSoundOn(!isSoundOn)}>
             <Text style={styles.iconText}>{isSoundOn ? '🔊' : '🔇'}</Text>
           </Pressable>
           <View style={styles.scoreContainer}>
             <Text style={styles.starIcon}>⭐</Text>
-            <Text style={[
-              styles.scoreText,
-              score < 0 && styles.negativeScore
-            ]}>{score}</Text>
+            <Text style={[styles.scoreText, score < 0 && styles.negativeScore]}>
+              {score}
+            </Text>
           </View>
         </View>
 
@@ -288,7 +314,12 @@ const GamePlay = ({ navigation, route }) => {
             source={require('../../assets/image/game/player.png')}
             style={[
               styles.player,
-              { transform: [{ translateX: playerPosition.x }, { translateY: playerPosition.y }] }
+              {
+                transform: [
+                  {translateX: playerPosition.x},
+                  {translateY: playerPosition.y},
+                ],
+              },
             ]}
           />
 
@@ -298,7 +329,7 @@ const GamePlay = ({ navigation, route }) => {
               key={index}
               style={[
                 styles.platform,
-                { left: platform.x, top: platform.y, width: platform.width }
+                {left: platform.x, top: platform.y, width: platform.width},
               ]}
             />
           ))}
@@ -308,7 +339,7 @@ const GamePlay = ({ navigation, route }) => {
             <Image
               key={index}
               source={require('../../assets/image/game/star.png')}
-              style={[styles.star, { left: star.x, top: star.y }]}
+              style={[styles.star, {left: star.x, top: star.y}]}
             />
           ))}
 
@@ -317,7 +348,7 @@ const GamePlay = ({ navigation, route }) => {
             <Image
               key={index}
               source={require('../../assets/image/game/bird.png')}
-              style={[styles.bird, { left: bird.x, top: bird.y }]}
+              style={[styles.bird, {left: bird.x, top: bird.y}]}
             />
           ))}
         </View>
@@ -335,8 +366,7 @@ const GamePlay = ({ navigation, route }) => {
           transparent={true}
           visible={showModal}
           animationType="fade"
-          onRequestClose={handleRevisit}
-        >
+          onRequestClose={handleRevisit}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               {/* Top Avatar */}
@@ -344,7 +374,7 @@ const GamePlay = ({ navigation, route }) => {
                 source={require('../../assets/image/game/avatar-top.png')}
                 style={styles.topAvatar}
               />
-              
+
               <Text style={styles.modalText}>
                 Not this time... But the{'\n'}next run will be{'\n'}legendary!
               </Text>
@@ -356,19 +386,13 @@ const GamePlay = ({ navigation, route }) => {
               />
 
               {/* Buttons */}
-              <Pressable
-                style={styles.tryAgainButton}
-                onPress={handleTryAgain}
-              >
+              <Pressable style={styles.tryAgainButton} onPress={handleTryAgain}>
                 <View style={styles.tryAgainInner}>
                   <Text style={styles.buttonText}>Try again</Text>
                 </View>
               </Pressable>
 
-              <Pressable
-                style={styles.revisitButton}
-                onPress={handleRevisit}
-              >
+              <Pressable style={styles.revisitButton} onPress={handleRevisit}>
                 <Text style={styles.buttonText}>Revisit</Text>
               </Pressable>
             </View>
@@ -415,7 +439,7 @@ const styles = StyleSheet.create({
   },
   player: {
     width: PLAYER_SIZE,
-    height:60,
+    height: 60,
     position: 'absolute',
   },
   platform: {
