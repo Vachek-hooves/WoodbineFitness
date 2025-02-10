@@ -3,12 +3,12 @@ import React from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 
 const activities = [
-  {name: 'Running', icon: '🏃'},
-  {name: 'Strength Training', icon: '💪'},
-  {name: 'Yoga & Stretching', icon: '🧘'},
-  {name: 'Cycling', icon: '🚴'},
-  {name: 'Hiking & Walking', icon: '🚶'},
-  {name: 'Fitness Workouts', icon: '🔥'},
+  {name: 'Running', icon: '🏃', title: 'Running'},
+  {name: 'Strength Training', icon: '💪', title: 'Strength'},
+  {name: 'Yoga & Stretching', icon: '🧘', title: 'Yoga'},
+  {name: 'Cycling', icon: '🚴', title: 'Cycling'},
+  {name: 'Hiking & Walking', icon: '🚶', title: 'Hiking'},
+  {name: 'Fitness Workouts', icon: '🔥', title: 'Fitness'},
 ];
 
 const Plan = ({navigation}) => {
@@ -26,7 +26,7 @@ const Plan = ({navigation}) => {
             <Pressable
               key={activity.name}
               style={styles.activityButton}
-              onPress={() => handleActivityPress(activity.name)}>
+              onPress={() => handleActivityPress(activity.title)}>
               <View style={styles.buttonInner}>
                 <Text style={styles.buttonText}>
                   {activity.icon} {activity.name}
