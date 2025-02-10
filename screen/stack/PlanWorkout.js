@@ -37,10 +37,9 @@ const PlanWorkout = ({route, navigation}) => {
     const selectedWorkout = selectedPhases.map(
       index => workoutPlan.phases[index],
     );
-    navigation.navigate('TimerCount', {
-      activity:activity.title,
-      minutes: 30, // Default duration - you can adjust this based on the workout
-      seconds: 0,
+    navigation.navigate('PlanWorkoutBegin', {
+      selectedPhases: selectedWorkout,
+      activity: activity.title,
     });
   };
 
