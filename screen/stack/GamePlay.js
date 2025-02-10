@@ -49,7 +49,6 @@ const GamePlay = ({ navigation, route }) => {
       .map(platform => ({
         x: platform.x + platform.width / 2 - STAR_SIZE / 2, // Center star on platform
         y: platform.y - 60, // Position star above platform
-        collected: false
       }));
     setStars(initialStars);
 
@@ -89,20 +88,31 @@ const GamePlay = ({ navigation, route }) => {
   };
 
   const checkCollisions = () => {
-    // Check star collections
     const playerX = playerPosition.x._value;
     const playerY = playerPosition.y._value;
 
-    stars.forEach((star, index) => {
-      if (
-        !star.collected && // Only check uncollected stars
-        playerX < star.x + STAR_SIZE &&
-        playerX + PLAYER_SIZE > star.x &&
-        playerY < star.y + STAR_SIZE &&
-        playerY + PLAYER_SIZE > star.y
-      ) {
-        collectStar(index);
+    // Check for star collisions and immediately remove collected stars
+    setStars(prevStars => {
+      let scoreIncrement = 0;
+      const updatedStars = prevStars.filter(star => {
+        const isColliding = 
+          playerX < star.x + STAR_SIZE &&
+          playerX + PLAYER_SIZE > star.x &&
+          playerY < star.y + STAR_SIZE &&
+          playerY + PLAYER_SIZE > star.y;
+
+        if (isColliding) {
+          scoreIncrement = 10;
+          return false; // Remove the star
+        }
+        return true; // Keep the star
+      });
+
+      if (scoreIncrement > 0) {
+        setScore(prev => prev + 10);
       }
+
+      return updatedStars;
     });
   };
 
@@ -114,15 +124,14 @@ const GamePlay = ({ navigation, route }) => {
         x: platform.x - 2
       }));
 
-      // When a platform moves off screen, add a new one on the right
       if (newPlatforms[0].x < -100) {
-        newPlatforms.shift(); // Remove the leftmost platform
+        newPlatforms.shift();
         const lastPlatform = newPlatforms[newPlatforms.length - 1];
         newPlatforms.push({
-          x: SCREEN_WIDTH, // Start from right edge
-          y: Math.random() * (SCREEN_HEIGHT - 400) + 150, // Random height
+          x: SCREEN_WIDTH,
+          y: Math.random() * (SCREEN_HEIGHT - 400) + 150,
           width: 100,
-          hasStar: Math.random() > 0.5 // 50% chance of having a star
+          hasStar: Math.random() > 0.5
         });
       }
 
@@ -132,12 +141,10 @@ const GamePlay = ({ navigation, route }) => {
     // Update stars positions
     setStars(prevStars => {
       // Move existing stars left
-      const movedStars = prevStars
-        .filter(star => !star.collected) // Keep uncollected stars
-        .map(star => ({
-          ...star,
-          x: star.x - 2
-        }));
+      const movedStars = prevStars.map(star => ({
+        ...star,
+        x: star.x - 2
+      }));
 
       // Add new stars for new platforms
       const platformsWithNewStars = platforms
@@ -148,15 +155,11 @@ const GamePlay = ({ navigation, route }) => {
 
       const newStars = platformsWithNewStars.map(platform => ({
         x: platform.x + platform.width/2 - STAR_SIZE/2,
-        y: platform.y - 60,
-        collected: false
+        y: platform.y - 60
       }));
 
       // Remove off-screen stars
-      const visibleStars = [...movedStars, ...newStars]
-        .filter(star => star.x > -STAR_SIZE);
-
-      return visibleStars;
+      return [...movedStars, ...newStars].filter(star => star.x > -STAR_SIZE);
     });
 
     // Check collisions after updating positions
@@ -169,13 +172,6 @@ const GamePlay = ({ navigation, route }) => {
         x: bird.x + (bird.direction * 3),
       }))
     );
-  };
-
-  const collectStar = (index) => {
-    setStars(prev => prev.map((star, i) => 
-      i === index ? { ...star, collected: true } : star
-    ));
-    setScore(prev => prev + 10); // Add exactly 10 points
   };
 
   const handleGameOver = () => {
