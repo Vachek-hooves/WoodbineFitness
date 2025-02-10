@@ -5,9 +5,11 @@ import CustomGradient from '../../components/Layout/CustomGradient';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const PLAYER_SIZE = 50;
-const PLATFORM_HEIGHT = 20;
+const PLATFORM_HEIGHT = 1;
 const STAR_SIZE = 30;
 const BIRD_SIZE = 40;
+const FPS = 60;
+const FRAME_TIME = 1000 / FPS;
 
 const GamePlay = ({ navigation, route }) => {
   const [score, setScore] = useState(0);
@@ -18,51 +20,33 @@ const GamePlay = ({ navigation, route }) => {
   const [stars, setStars] = useState([]);
   const [birds, setBirds] = useState([]);
   const [isSoundOn, setIsSoundOn] = useState(true);
+  const gameLoopRef = useRef(null);
+  const lastUpdateRef = useRef(Date.now());
 
   // Initialize game elements
   useEffect(() => {
     startGame();
+    return () => {
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
+    };
   }, []);
 
-  // Add game loop for movement
-  useEffect(() => {
-    const gameLoop = setInterval(() => {
-      if (!gameOver) {
-        updateGame();
-      }
-    },2); // ~60fps
-
-    return () => clearInterval(gameLoop);
-  }, [gameOver, platforms]);
-
-  // Add bird spawn timer
-  useEffect(() => {
-    const birdSpawnInterval = setInterval(() => {
-      if (!gameOver) {
-        spawnBird();
-      }
-    }, 6500); // Spawn bird every 3.5 seconds
-
-    return () => clearInterval(birdSpawnInterval);
-  }, [gameOver]);
-
   const startGame = () => {
-    // Initialize platforms with more spread out X positions
+    // Initialize platforms with more spread out positions
     const initialPlatforms = [
-      { x: 0, y: SCREEN_HEIGHT - 200, width: 100, hasStar: true },
-      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 300, width: 100, hasStar: true },
-      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 400, width: 100, hasStar: true },
-      // { x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT - 550, width: 100, hasStar: true },
+      { x: 0, y: SCREEN_HEIGHT - 150, width: 100 },
+      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 250, width: 100 },
+      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 350, width: 100 },
     ];
     setPlatforms(initialPlatforms);
 
-    // Initialize stars based on platforms
-    const initialStars = initialPlatforms
-      .filter(platform => platform.hasStar)
-      .map(platform => ({
-        x: platform.x + platform.width / 2 - STAR_SIZE / 2, // Center star on platform
-        y: platform.y - 60, // Position star above platform
-      }));
+    // Initialize stars aligned with platforms
+    const initialStars = [
+      { x: 100, y: SCREEN_HEIGHT - 300 },
+      { x: SCREEN_WIDTH * 0.4 + 50, y: SCREEN_HEIGHT - 400 },
+    ];
     setStars(initialStars);
 
     // Initialize birds
@@ -70,6 +54,137 @@ const GamePlay = ({ navigation, route }) => {
       { x: SCREEN_WIDTH, y: SCREEN_HEIGHT - 300, direction: -1 },
     ];
     setBirds(initialBirds);
+
+    if (gameLoopRef.current) {
+      cancelAnimationFrame(gameLoopRef.current);
+    }
+    gameLoop();
+  };
+
+  const gameLoop = () => {
+    const now = Date.now();
+    const deltaTime = now - lastUpdateRef.current;
+
+    if (deltaTime >= FRAME_TIME) {
+      if (!gameOver) {
+        updateGameState(deltaTime);
+      }
+      lastUpdateRef.current = now;
+    }
+
+    gameLoopRef.current = requestAnimationFrame(gameLoop);
+  };
+
+  const updateGameState = (deltaTime) => {
+    // Reduced movement speed (from 2 to 1)
+    const moveSpeed = (1 * deltaTime) / FRAME_TIME;
+
+    // Update platforms with continuous spawning
+    setPlatforms(prevPlatforms => {
+      const newPlatforms = prevPlatforms
+        .map(platform => ({
+          ...platform,
+          x: platform.x - moveSpeed
+        }))
+        .filter(platform => platform.x > -platform.width);
+
+      // Add new platform when the last one is sufficiently far from the right edge
+      const lastPlatform = newPlatforms[newPlatforms.length - 1];
+      if (lastPlatform && lastPlatform.x < SCREEN_WIDTH - 200) {
+        newPlatforms.push({
+          x: SCREEN_WIDTH,
+          y: Math.random() * (SCREEN_HEIGHT - 400) + 150, // Random height between 150 and SCREEN_HEIGHT-250
+          width: 100
+        });
+      }
+
+      return newPlatforms;
+    });
+
+    // Update stars with continuous spawning
+    setStars(prevStars => {
+      const newStars = prevStars
+        .map(star => ({
+          ...star,
+          x: star.x - moveSpeed
+        }))
+        .filter(star => star.x > -STAR_SIZE);
+
+      // Add new star with 5% chance per frame
+      if (Math.random() < 0.05 && newStars.length < 5) {
+        newStars.push({
+          x: SCREEN_WIDTH,
+          y: Math.random() * (SCREEN_HEIGHT - 400) + 150,
+        });
+      }
+
+      return newStars;
+    });
+
+    // Update birds with continuous spawning
+    setBirds(prevBirds => {
+      const newBirds = prevBirds
+        .map(bird => ({
+          ...bird,
+          x: bird.x - (moveSpeed * 1.2) // Slightly faster than platforms
+        }))
+        .filter(bird => bird.x > -BIRD_SIZE);
+
+      // Add new bird with 1% chance per frame
+      if (Math.random() < 0.01 && newBirds.length < 2) {
+        newBirds.push({
+          x: SCREEN_WIDTH,
+          y: Math.random() * (SCREEN_HEIGHT - 400) + 150,
+          direction: -1
+        });
+      }
+
+      return newBirds;
+    });
+
+    // Check collisions
+    checkCollisions();
+  };
+
+  const checkCollisions = () => {
+    const playerX = playerPosition.x._value;
+    const playerY = playerPosition.y._value;
+
+    // Check star collisions
+    setStars(prevStars => {
+      let scoreIncrement = 0;
+      const updatedStars = prevStars.filter(star => {
+        const isColliding = 
+          playerX < star.x + STAR_SIZE &&
+          playerX + PLAYER_SIZE > star.x &&
+          playerY < star.y + STAR_SIZE &&
+          playerY + PLAYER_SIZE > star.y;
+
+        if (isColliding) {
+          scoreIncrement = 10;
+          return false;
+        }
+        return true;
+      });
+
+      if (scoreIncrement > 0) {
+        setScore(prev => prev + scoreIncrement);
+      }
+
+      return updatedStars;
+    });
+
+    // Check bird collisions
+    birds.forEach(bird => {
+      if (
+        playerX < bird.x + BIRD_SIZE &&
+        playerX + PLAYER_SIZE > bird.x &&
+        playerY < bird.y + BIRD_SIZE &&
+        playerY + PLAYER_SIZE > bird.y
+      ) {
+        handleGameOver();
+      }
+    });
   };
 
   // Handle swipe gestures
@@ -98,116 +213,6 @@ const GamePlay = ({ navigation, route }) => {
       duration: 300,
       useNativeDriver: false,
     }).start();
-  };
-
-  const spawnBird = () => {
-    const newBird = {
-      x: SCREEN_WIDTH,
-      y: Math.random() * (SCREEN_HEIGHT - 400) + 150, // Random height
-      direction: -1
-    };
-    setBirds(prev => [...prev, newBird]);
-  };
-
-  const checkCollisions = () => {
-    const playerX = playerPosition.x._value;
-    const playerY = playerPosition.y._value;
-
-    // Check bird collisions
-    birds.forEach(bird => {
-      if (
-        playerX < bird.x + BIRD_SIZE &&
-        playerX + PLAYER_SIZE > bird.x &&
-        playerY < bird.y + BIRD_SIZE &&
-        playerY + PLAYER_SIZE > bird.y
-      ) {
-        handleGameOver();
-      }
-    });
-
-    // Check star collisions (existing code)
-    setStars(prevStars => {
-      let scoreIncrement = 0;
-      const updatedStars = prevStars.filter(star => {
-        const isColliding = 
-          playerX < star.x + STAR_SIZE &&
-          playerX + PLAYER_SIZE > star.x &&
-          playerY < star.y + STAR_SIZE &&
-          playerY + PLAYER_SIZE > star.y;
-
-        if (isColliding) {
-          scoreIncrement = 10;
-          return false;
-        }
-        return true;
-      });
-
-      if (scoreIncrement > 0) {
-        setScore(prev => prev + 10);
-      }
-
-      return updatedStars;
-    });
-  };
-
-  const updateGame = () => {
-    // Move platforms to the left
-    setPlatforms(prevPlatforms => {
-      const newPlatforms = prevPlatforms.map(platform => ({
-        ...platform,
-        x: platform.x - 2
-      }));
-
-      if (newPlatforms[0].x < -100) {
-        newPlatforms.shift();
-        const lastPlatform = newPlatforms[newPlatforms.length - 1];
-        newPlatforms.push({
-          x: SCREEN_WIDTH,
-          y: Math.random() * (SCREEN_HEIGHT - 400) + 150,
-          width: 100,
-          hasStar: Math.random() > 0.5
-        });
-      }
-
-      return newPlatforms;
-    });
-
-    // Update stars positions
-    setStars(prevStars => {
-      // Move existing stars left
-      const movedStars = prevStars.map(star => ({
-        ...star,
-        x: star.x - 2
-      }));
-
-      // Add new stars for new platforms
-      const platformsWithNewStars = platforms
-        .filter(platform => platform.hasStar && 
-          !prevStars.some(star => 
-            Math.abs(star.x - (platform.x + platform.width/2)) < 10
-          ));
-
-      const newStars = platformsWithNewStars.map(platform => ({
-        x: platform.x + platform.width/2 - STAR_SIZE/2,
-        y: platform.y - 60
-      }));
-
-      // Remove off-screen stars
-      return [...movedStars, ...newStars].filter(star => star.x > -STAR_SIZE);
-    });
-
-    // Update birds position and remove off-screen birds
-    setBirds(prevBirds => 
-      prevBirds
-        .map(bird => ({
-          ...bird,
-          x: bird.x + (bird.direction * 3),
-        }))
-        .filter(bird => bird.x > -BIRD_SIZE) // Remove off-screen birds
-    );
-
-    // Check collisions after updating positions
-    checkCollisions();
   };
 
   const handleGameOver = () => {
