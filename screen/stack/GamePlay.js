@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   iconButton: {
-    width: 50,
+    width: 60,
     height: 50,
     borderWidth: 2,
     borderColor: '#FF0000',
@@ -542,5 +542,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  iconText: {
+    fontSize: 32,
   },
 });

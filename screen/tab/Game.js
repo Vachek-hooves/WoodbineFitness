@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, Pressable, Image} from 'react-native';
+import {StyleSheet, Text, View, Pressable, Image,ScrollView} from 'react-native';
 import React, {useEffect} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 import {useStore} from '../../store/context';
@@ -17,6 +17,7 @@ const Game = ({navigation}) => {
   return (
     <CustomGradient>
       <View style={styles.container}>
+        <ScrollView showsVerticalScrollIndicator={false} >
         {/* Header Icons */}
         <View style={styles.header}>
           <Pressable style={styles.iconButton}>
@@ -48,7 +49,7 @@ const Game = ({navigation}) => {
           <View style={styles.buttonInner}>
             <Text style={styles.buttonText}>Let's Go!</Text>
           </View>
-        </Pressable>
+        </Pressable></ScrollView>
       </View>
     </CustomGradient>
   );

@@ -68,6 +68,7 @@ const Activities = ({ navigation }) => {
             ))}
           </View>
         </View>
+        <View style={{height: 100}}/>
       </ScrollView>
     </CustomGradient>
   );

@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, Pressable, Alert} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,12 +33,12 @@ const GameLevels = ({navigation}) => {
     }
   };
 
-  const unlockLevel = async (level) => {
+  const unlockLevel = async level => {
     if (highScore < LEVEL_COST) {
       Alert.alert(
         'Not Enough Stars',
         `You need ${LEVEL_COST} stars to unlock this level. Current stars: ${highScore}`,
-        [{text: 'OK'}]
+        [{text: 'OK'}],
       );
       return;
     }
@@ -47,16 +54,19 @@ const GameLevels = ({navigation}) => {
             const success = await deductFromHighScore(LEVEL_COST);
             if (success) {
               const newUnlockedLevels = {...unlockedLevels, [level]: true};
-              await AsyncStorage.setItem('unlockedLevels', JSON.stringify(newUnlockedLevels));
+              await AsyncStorage.setItem(
+                'unlockedLevels',
+                JSON.stringify(newUnlockedLevels),
+              );
               setUnlockedLevels(newUnlockedLevels);
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
-  const handleLevelPress = (level) => {
+  const handleLevelPress = level => {
     if (unlockedLevels[level]) {
       navigation.navigate('GamePlay', {level});
     } else {
@@ -67,45 +77,52 @@ const GameLevels = ({navigation}) => {
   return (
     <CustomGradient>
       <View style={styles.container}>
-        {/* Header with score */}
-        <View style={styles.header}>
-          <Pressable 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>←</Text>
-          </Pressable>
-          <View style={styles.scoreContainer}>
-            <Text style={styles.starIcon}>⭐</Text>
-            <Text style={styles.scoreText}>{highScore}</Text>
+          {/* Header with score */}
+          <View style={styles.header}>
+            <Pressable
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}>
+              <Text style={styles.backButtonText}>←</Text>
+            </Pressable>
+            <View style={styles.scoreContainer}>
+              <Text style={styles.starIcon}>⭐</Text>
+              <Text style={styles.scoreText}>{highScore}</Text>
+            </View>
           </View>
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
 
-        <View style={styles.levelsContainer}>
+          <View style={styles.levelsContainer}>
+            {/* Levels Grid */}
+            <View style={styles.levelsGrid}>
+              {Array(totalLevels)
+                .fill(0)
+                .map((_, index) => {
+                  const level = index + 1;
+                  const isUnlocked = unlockedLevels[level];
 
-        {/* Levels Grid */}
-        <View style={styles.levelsGrid}>
-          {Array(totalLevels).fill(0).map((_, index) => {
-            const level = index + 1;
-            const isUnlocked = unlockedLevels[level];
-            
-            return (
-              <Pressable
-              key={level}
-              style={[
-                styles.levelButton,
-                isUnlocked ? styles.levelUnlocked : styles.levelLocked
-              ]}
-              onPress={() => handleLevelPress(level)}
-              >
-                <Text style={styles.levelText}>{level}</Text>
-                {!isUnlocked && (
-                  <Text style={styles.costText}>{LEVEL_COST}⭐</Text>
-                )}
-              </Pressable>
-            );
-          })}
-        </View>
+                  return (
+                    <Pressable
+                      key={level}
+                      style={[
+                        styles.levelButton,
+                        isUnlocked ? styles.levelUnlocked : styles.levelLocked,
+                      ]}
+                      onPress={() => handleLevelPress(level)}>
+                      <Text style={styles.levelText}>{level}</Text>
+                      {!isUnlocked && (
+                        <Text style={styles.costText}>{LEVEL_COST}⭐</Text>
+                      )}
+                    </Pressable>
+                  );
+                })}
+            </View>
           </View>
+        </ScrollView>
+            <Pressable style={styles.moveOnButton}>
+              <View style={styles.moveOnInner}>
+                <Text style={styles.moveOnText}>Move On!</Text>
+              </View>
+            </Pressable>
       </View>
     </CustomGradient>
   );
@@ -120,7 +137,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    
   },
   header: {
     flexDirection: 'row',
@@ -191,6 +207,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     position: 'absolute',
     bottom: -20,
+  },
+  moveOnButton: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    height: 60,
+    padding: 2,
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    borderRadius: 30,
+  },
+  moveOnInner: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    borderRadius: 27,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moveOnText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
 
