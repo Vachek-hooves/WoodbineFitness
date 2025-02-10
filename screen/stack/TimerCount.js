@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Pressable,ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { AnimatedCircularProgress } from 'react-native-circular-progress'
 import CustomGradient from '../../components/Layout/CustomGradient'
+import { getRandomTip } from '../../data/activityAdvices'
 
 const TimerCount = ({ route, navigation }) => {
   const { minutes, seconds, activity } = route.params
@@ -9,6 +10,7 @@ const TimerCount = ({ route, navigation }) => {
   const [timeLeft, setTimeLeft] = useState(totalSeconds)
   const [isActive, setIsActive] = useState(true)
   const [isPaused, setIsPaused] = useState(false)
+  const [currentTip, setCurrentTip] = useState(null)
 
   useEffect(() => {
     let interval = null
@@ -23,6 +25,12 @@ const TimerCount = ({ route, navigation }) => {
     }
     return () => clearInterval(interval)
   }, [isActive, isPaused, timeLeft])
+
+  useEffect(() => {
+    // Update tip every minute or when needed
+    const tip = getRandomTip(activity)
+    setCurrentTip(tip)
+  }, [activity])
 
   const formatTime = (totalSeconds) => {
     const mins = Math.floor(totalSeconds / 60)
@@ -114,6 +122,14 @@ const TimerCount = ({ route, navigation }) => {
             </View>
           </Pressable>
         </View>
+
+        {/* Tip */}
+        {currentTip && (
+          <View style={styles.tipContainer}>
+            <Text style={styles.tipIcon}>{currentTip.icon}</Text>
+            <Text style={styles.tipText}>{currentTip.tip}</Text>
+          </View>
+        )}
       </View>
     </CustomGradient>
   )
@@ -185,5 +201,20 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 20,
+  },
+  tipContainer: {
+    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 10,
+  },
+  tipIcon: {
+    fontSize: 24,
+    marginBottom: 5,
+  },
+  tipText: {
+    color: 'white',
+    fontSize: 14,
+    lineHeight: 20,
   },
 })
