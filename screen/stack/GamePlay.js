@@ -30,7 +30,7 @@ const GamePlay = ({ navigation, route }) => {
       if (!gameOver) {
         updateGame();
       }
-    }, 16); // ~60fps
+    },2); // ~60fps
 
     return () => clearInterval(gameLoop);
   }, [gameOver, platforms]);
