@@ -44,11 +44,33 @@ export const StoreProvider = ({children}) => {
     }
   };
 
+  const resetGameProgress = async () => {
+    try {
+      // Reset all game-related storage
+      await AsyncStorage.multiRemove([
+        'highScore',
+        'unlockedLevels'
+      ]);
+      
+      // Reset high score in state
+      setHighScore(0);
+      
+      // Reset unlocked levels to initial state (only level 1 unlocked)
+      await AsyncStorage.setItem('unlockedLevels', JSON.stringify({ 1: true }));
+      
+      return true;
+    } catch (error) {
+      console.error('Error resetting game progress:', error);
+      return false;
+    }
+  };
+
   const value = {
     highScore, 
     updateHighScore, 
     loadHighScore,
-    deductFromHighScore
+    deductFromHighScore,
+    resetGameProgress
   };
   
   return (
