@@ -1,5 +1,6 @@
-import {createContext, useContext, useState, useEffect} from 'react';
+import {createContext, useContext, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export const StoreContext = createContext();
 
 export const StoreProvider = ({children}) => {
@@ -17,6 +18,21 @@ export const StoreProvider = ({children}) => {
     }
   };
 
+  const deductFromHighScore = async (amount) => {
+    try {
+      const newScore = highScore - amount;
+      if (newScore >= 0) {
+        await AsyncStorage.setItem('highScore', newScore.toString());
+        setHighScore(newScore);
+        return true; // Successful deduction
+      }
+      return false; // Not enough score
+    } catch (error) {
+      console.error('Error deducting from high score:', error);
+      return false;
+    }
+  };
+
   const loadHighScore = async () => {
     try {
       const savedScore = await AsyncStorage.getItem('highScore');
@@ -28,7 +44,13 @@ export const StoreProvider = ({children}) => {
     }
   };
 
-  const value = {highScore, updateHighScore, loadHighScore};
+  const value = {
+    highScore, 
+    updateHighScore, 
+    loadHighScore,
+    deductFromHighScore
+  };
+  
   return (
     <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
   );
