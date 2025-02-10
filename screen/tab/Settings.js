@@ -45,11 +45,11 @@ const Settings = () => {
     <CustomGradient>
       <View style={styles.container}>
         {/* Profile Icon */}
-        <View style={styles.headerRight}>
+        {/* <View style={styles.headerRight}>
           <Pressable style={styles.profileButton}>
             <Text style={styles.profileIcon}>👤</Text>
           </Pressable>
-        </View>
+        </View> */}
 
         {/* Settings Card */}
         <View style={styles.card}>

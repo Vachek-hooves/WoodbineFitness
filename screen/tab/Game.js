@@ -20,12 +20,12 @@ const Game = ({navigation}) => {
         <ScrollView showsVerticalScrollIndicator={false} >
         {/* Header Icons */}
         <View style={styles.header}>
-          <Pressable style={styles.iconButton}>
+          {/* <Pressable style={styles.iconButton}>
             <Text style={styles.iconText}>🔊</Text>
           </Pressable>
           <Pressable style={styles.iconButton}>
             <Text style={styles.iconText}>🏆</Text>
-          </Pressable>
+          </Pressable> */}
         </View>
 
         {/* Game Logo */}
