@@ -52,7 +52,7 @@ const GamePlay = ({ navigation, route }) => {
       { x: 0, y: SCREEN_HEIGHT - 200, width: 100, hasStar: true },
       { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 300, width: 100, hasStar: true },
       { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 400, width: 100, hasStar: true },
-      { x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT - 550, width: 100, hasStar: true },
+      // { x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT - 550, width: 100, hasStar: true },
     ];
     setPlatforms(initialPlatforms);
 
