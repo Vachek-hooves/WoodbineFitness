@@ -23,12 +23,23 @@ const GamePlay = ({ navigation, route }) => {
     startGame();
   }, []);
 
+  // Add game loop for movement
+  useEffect(() => {
+    const gameLoop = setInterval(() => {
+      if (!gameOver) {
+        updateGame();
+      }
+    }, 16); // ~60fps
+
+    return () => clearInterval(gameLoop);
+  }, [gameOver, platforms]);
+
   const startGame = () => {
-    // Initialize platforms
+    // Initialize platforms with more spread out X positions
     const initialPlatforms = [
       { x: 0, y: SCREEN_HEIGHT - 150, width: 100 },
-      { x: 150, y: SCREEN_HEIGHT - 250, width: 100 },
-      { x: 300, y: SCREEN_HEIGHT - 350, width: 100 },
+      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 250, width: 100 },
+      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 350, width: 100 },
     ];
     setPlatforms(initialPlatforms);
 
@@ -74,19 +85,29 @@ const GamePlay = ({ navigation, route }) => {
     }).start();
   };
 
-  // Game loop
-  useEffect(() => {
-    const gameLoop = setInterval(() => {
-      if (!gameOver) {
-        updateGame();
-      }
-    }, 16); // ~60fps
-
-    return () => clearInterval(gameLoop);
-  }, [gameOver, platforms, stars, birds]);
-
   const updateGame = () => {
-    // Update bird positions
+    // Move platforms to the left
+    setPlatforms(prevPlatforms => {
+      const newPlatforms = prevPlatforms.map(platform => ({
+        ...platform,
+        x: platform.x - 2 // Move 2 pixels left each frame
+      }));
+
+      // When a platform moves off screen, add a new one on the right
+      if (newPlatforms[0].x < -100) {
+        newPlatforms.shift(); // Remove the leftmost platform
+        const lastPlatform = newPlatforms[newPlatforms.length - 1];
+        newPlatforms.push({
+          x: SCREEN_WIDTH, // Start from right edge
+          y: Math.random() * (SCREEN_HEIGHT - 400) + 150, // Random height
+          width: 100
+        });
+      }
+
+      return newPlatforms;
+    });
+
+    // Move birds
     setBirds(prevBirds => 
       prevBirds.map(bird => ({
         ...bird,
