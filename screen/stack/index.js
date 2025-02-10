@@ -3,5 +3,15 @@ import Game from '../tab/Game';
 import Plan from '../tab/Plan';
 import Settings from '../tab/Settings';
 import Statistic from '../tab/Statistic';
+import PlanWorkout from './PlanWorkout';
+import PlanWorkoutBegin from './PlanWorkoutBegin';
 
-export {Activities, Game, Plan, Settings, Statistic};
+export {
+  Activities,
+  Game,
+  Plan,
+  Settings,
+  Statistic,
+  PlanWorkout,
+  PlanWorkoutBegin,
+};

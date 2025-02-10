@@ -1,21 +1,24 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import {StyleSheet, Text, View, Pressable, ScrollView} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
-import { getWorkoutPlan } from '../../data/workoutPlan';
+import {getWorkoutPlan} from '../../data/workoutPlan';
+import { activityAdvices } from '../../data/activityAdvices';
 
-const PlanWorkout = ({ route, navigation }) => {
-  const { activity } = route.params;
+const PlanWorkout = ({route, navigation}) => {
+  const {activity} = route.params;
+  const {title, name} = activity;
   const [workoutPlan, setWorkoutPlan] = useState(null);
   const [selectedPhases, setSelectedPhases] = useState([]);
+  console.log(selectedPhases);
 
   useEffect(() => {
-    const plan = getWorkoutPlan(activity);
+    const plan = getWorkoutPlan(title);
     setWorkoutPlan(plan);
     // Reset selections when activity changes
     setSelectedPhases([]);
-  }, [activity]);
+  }, [title]);
 
-  const togglePhase = (index) => {
+  const togglePhase = index => {
     setSelectedPhases(prevSelected => {
       if (prevSelected.includes(index)) {
         return prevSelected.filter(i => i !== index);
@@ -31,11 +34,13 @@ const PlanWorkout = ({ route, navigation }) => {
       return;
     }
     // Filter only selected phases and navigate to timer
-    const selectedWorkout = selectedPhases.map(index => workoutPlan.phases[index]);
+    const selectedWorkout = selectedPhases.map(
+      index => workoutPlan.phases[index],
+    );
     navigation.navigate('TimerCount', {
-      activity,
+      activity:activity.title,
       minutes: 30, // Default duration - you can adjust this based on the workout
-      seconds: 0
+      seconds: 0,
     });
   };
 
@@ -44,40 +49,47 @@ const PlanWorkout = ({ route, navigation }) => {
   return (
     <CustomGradient>
       <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>{name}</Text>
+        </View>
         <Text style={styles.title}>Create Your Perfect Workout</Text>
 
-        <View style={styles.phasesContainer}>
-          {workoutPlan.phases.map((phase, index) => (
-            <Pressable 
-              key={index}
-              onPress={() => togglePhase(index)}
-              style={styles.phaseRow}>
-              <View style={[
-                styles.checkbox,
-                selectedPhases.includes(index) ? styles.checkboxSelected : styles.checkboxUnselected
-              ]}>
-                {selectedPhases.includes(index) && (
-                  <Text style={styles.checkmark}>✓</Text>
-                )}
-              </View>
-              <View style={styles.phaseTextContainer}>
-                <Text style={styles.phaseText}>
-                  {phase.title}
-                  {phase.duration ? ` (${phase.duration})` : ''}
-                  {phase.description ? `: ${phase.description}` : ''}
-                  {phase.exercises ? `: ${phase.exercises.join(', ')}` : ''}
-                  {phase.sets ? ` (${phase.sets} sets)` : ''}
-                  {phase.distance ? ` (${phase.distance})` : ''}
-                </Text>
-              </View>
-            </Pressable>
-          ))}
-        </View>
-
-        <Pressable 
+        <ScrollView>
+          <View style={styles.phasesContainer}>
+            {workoutPlan.phases.map((phase, index) => (
+              <Pressable
+                key={index}
+                onPress={() => togglePhase(index)}
+                style={styles.phaseRow}>
+                <View
+                  style={[
+                    styles.checkbox,
+                    selectedPhases.includes(index)
+                      ? styles.checkboxSelected
+                      : styles.checkboxUnselected,
+                  ]}>
+                  {selectedPhases.includes(index) && (
+                    <Text style={styles.checkmark}>✓</Text>
+                  )}
+                </View>
+                <View style={styles.phaseTextContainer}>
+                  <Text style={styles.phaseText}>
+                    {phase.title}
+                    {phase.duration ? ` (${phase.duration})` : ''}
+                    {phase.description ? `: ${phase.description}` : ''}
+                    {phase.exercises ? `: ${phase.exercises.join(', ')}` : ''}
+                    {phase.sets ? ` (${phase.sets} sets)` : ''}
+                    {phase.distance ? ` (${phase.distance})` : ''}
+                  </Text>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </ScrollView>
+        <Pressable
           style={[
             styles.startButton,
-            selectedPhases.length === 0 && styles.startButtonDisabled
+            selectedPhases.length === 0 && styles.startButtonDisabled,
           ]}
           onPress={handleStartFlow}>
           <View style={styles.buttonInner}>
@@ -102,6 +114,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     marginBottom: 30,
+    textAlign: 'center',
   },
   phasesContainer: {
     gap: 20,

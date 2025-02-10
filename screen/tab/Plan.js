@@ -26,7 +26,7 @@ const Plan = ({navigation}) => {
             <Pressable
               key={activity.name}
               style={styles.activityButton}
-              onPress={() => handleActivityPress(activity.title)}>
+              onPress={() => handleActivityPress(activity)}>
               <View style={styles.buttonInner}>
                 <Text style={styles.buttonText}>
                   {activity.icon} {activity.name}
