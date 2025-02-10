@@ -1,14 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import CustomGradient from '../../components/Layout/CustomGradient';
 
 const GamePlay = () => {
-  return (
-    <View>
-      <Text>GamePlay</Text>
-    </View>
-  )
-}
+  return <CustomGradient></CustomGradient>;
+};
 
-export default GamePlay
+export default GamePlay;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
