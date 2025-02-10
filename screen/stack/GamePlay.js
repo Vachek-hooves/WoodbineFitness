@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   star: {
     width: STAR_SIZE,
-    height: STAR_SIZE,
+    height: 50,
     position: 'absolute',
   },
   bird: {
