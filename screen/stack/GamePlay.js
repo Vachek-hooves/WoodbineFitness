@@ -88,12 +88,30 @@ const GamePlay = ({ navigation, route }) => {
     }).start();
   };
 
+  const checkCollisions = () => {
+    // Check star collections
+    const playerX = playerPosition.x._value;
+    const playerY = playerPosition.y._value;
+
+    stars.forEach((star, index) => {
+      if (
+        !star.collected && // Only check uncollected stars
+        playerX < star.x + STAR_SIZE &&
+        playerX + PLAYER_SIZE > star.x &&
+        playerY < star.y + STAR_SIZE &&
+        playerY + PLAYER_SIZE > star.y
+      ) {
+        collectStar(index);
+      }
+    });
+  };
+
   const updateGame = () => {
     // Move platforms to the left
     setPlatforms(prevPlatforms => {
       const newPlatforms = prevPlatforms.map(platform => ({
         ...platform,
-        x: platform.x - 2 // Move 2 pixels left each frame
+        x: platform.x - 2
       }));
 
       // When a platform moves off screen, add a new one on the right
@@ -111,14 +129,14 @@ const GamePlay = ({ navigation, route }) => {
       return newPlatforms;
     });
 
-    // Update stars positions based on platform movement
+    // Update stars positions
     setStars(prevStars => {
       // Move existing stars left
       const movedStars = prevStars
-        .filter(star => !star.collected)
+        .filter(star => !star.collected) // Keep uncollected stars
         .map(star => ({
           ...star,
-          x: star.x - 2 // Move at same speed as platforms
+          x: star.x - 2
         }));
 
       // Add new stars for new platforms
@@ -134,12 +152,15 @@ const GamePlay = ({ navigation, route }) => {
         collected: false
       }));
 
-      // Remove stars that are off screen
+      // Remove off-screen stars
       const visibleStars = [...movedStars, ...newStars]
         .filter(star => star.x > -STAR_SIZE);
 
       return visibleStars;
     });
+
+    // Check collisions after updating positions
+    checkCollisions();
 
     // Move birds
     setBirds(prevBirds => 
@@ -148,46 +169,13 @@ const GamePlay = ({ navigation, route }) => {
         x: bird.x + (bird.direction * 3),
       }))
     );
-
-    // Check collisions
-    checkCollisions();
-  };
-
-  const checkCollisions = () => {
-    // Check platform collisions
-    const playerX = playerPosition.x._value;
-    const playerY = playerPosition.y._value;
-
-    // Check star collections
-    stars.forEach((star, index) => {
-      if (
-        playerX < star.x + STAR_SIZE &&
-        playerX + PLAYER_SIZE > star.x &&
-        playerY < star.y + STAR_SIZE &&
-        playerY + PLAYER_SIZE > star.y
-      ) {
-        collectStar(index);
-      }
-    });
-
-    // Check bird collisions
-    birds.forEach(bird => {
-      if (
-        playerX < bird.x + BIRD_SIZE &&
-        playerX + PLAYER_SIZE > bird.x &&
-        playerY < bird.y + BIRD_SIZE &&
-        playerY + PLAYER_SIZE > bird.y
-      ) {
-        handleGameOver();
-      }
-    });
   };
 
   const collectStar = (index) => {
-    setScore(prev => prev + 10);
     setStars(prev => prev.map((star, i) => 
       i === index ? { ...star, collected: true } : star
     ));
+    setScore(prev => prev + 10); // Add exactly 10 points
   };
 
   const handleGameOver = () => {
@@ -326,5 +314,10 @@ const styles = StyleSheet.create({
   swipeIcon: {
     width: 50,
     height: 120,
+  },
+  scoreText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FF0000',
   },
 });
