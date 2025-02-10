@@ -108,7 +108,10 @@ const GameLevels = ({navigation}) => {
                         isUnlocked ? styles.levelUnlocked : styles.levelLocked,
                       ]}
                       onPress={() => handleLevelPress(level)}>
+                        <View style={styles.levelTextContainer}>
+
                       <Text style={styles.levelText}>{level}</Text>
+                        </View>
                       {!isUnlocked && (
                         <Text style={styles.costText}>{LEVEL_COST}⭐</Text>
                       )}
@@ -129,6 +132,16 @@ const GameLevels = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  levelTextContainer: {
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    borderRadius: 12,
+    // padding: 10,
+    width:'90%',
+    height:'90%',
+    justifyContent:'center',
+    alignItems:'center',
+  },
   levelsContainer: {
     flex: 1,
     // padding: 20,
@@ -186,7 +199,7 @@ const styles = StyleSheet.create({
     width: 65,
     height: 65,
     borderWidth: 2,
-    borderRadius: 32.5,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 50,
