@@ -35,7 +35,7 @@ const PlanWorkoutBegin = ({ route, navigation }) => {
   }
 
   const handleDone = () => {
-    navigation.navigate('Home') // Or wherever you want to navigate after completion
+    navigation.navigate('TabNav',{screen:'Plan'}) // Or wherever you want to navigate after completion
   }
 
   return (
