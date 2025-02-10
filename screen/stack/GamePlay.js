@@ -34,6 +34,10 @@ const GamePlay = ({ navigation, route }) => {
   }, []);
 
   const startGame = () => {
+    // Reset score when starting new game
+    setScore(0);
+    setGameOver(false);
+    
     // Initialize platforms with more spread out positions
     const initialPlatforms = [
       { x: 0, y: SCREEN_HEIGHT - 150, width: 100 },
@@ -42,7 +46,7 @@ const GamePlay = ({ navigation, route }) => {
     ];
     setPlatforms(initialPlatforms);
 
-    // Initialize stars aligned with platforms
+    // Initialize stars
     const initialStars = [
       { x: 100, y: SCREEN_HEIGHT - 300 },
       { x: SCREEN_WIDTH * 0.4 + 50, y: SCREEN_HEIGHT - 400 },
@@ -150,41 +154,61 @@ const GamePlay = ({ navigation, route }) => {
     const playerX = playerPosition.x._value;
     const playerY = playerPosition.y._value;
 
-    // Check star collisions
-    setStars(prevStars => {
-      let scoreIncrement = 0;
-      const updatedStars = prevStars.filter(star => {
-        const isColliding = 
-          playerX < star.x + STAR_SIZE &&
-          playerX + PLAYER_SIZE > star.x &&
-          playerY < star.y + STAR_SIZE &&
-          playerY + PLAYER_SIZE > star.y;
+    // Check bird collisions and deduct points
+    setBirds(prevBirds => {
+      let shouldEndGame = false;
+      const updatedBirds = prevBirds.filter(bird => {
+        const birdCollision = 
+          playerX < bird.x + BIRD_SIZE &&
+          playerX + PLAYER_SIZE > bird.x &&
+          playerY < bird.y + BIRD_SIZE &&
+          playerY + PLAYER_SIZE > bird.y;
 
-        if (isColliding) {
-          scoreIncrement = 10;
-          return false;
+        if (birdCollision) {
+          setScore(prev => {
+            const newScore = prev - 20;
+            if (newScore <= 0) {
+              shouldEndGame = true;
+            }
+            return newScore;
+          });
+          return false; // Remove the bird
         }
         return true;
       });
 
-      if (scoreIncrement > 0) {
-        setScore(prev => prev + scoreIncrement);
-      }
-
-      return updatedStars;
-    });
-
-    // Check bird collisions
-    birds.forEach(bird => {
-      if (
-        playerX < bird.x + BIRD_SIZE &&
-        playerX + PLAYER_SIZE > bird.x &&
-        playerY < bird.y + BIRD_SIZE &&
-        playerY + PLAYER_SIZE > bird.y
-      ) {
+      if (shouldEndGame) {
         handleGameOver();
       }
+
+      return updatedBirds;
     });
+
+    // Check star collisions if game is not over
+    if (!gameOver) {
+      setStars(prevStars => {
+        let scoreIncrement = 0;
+        const updatedStars = prevStars.filter(star => {
+          const isColliding = 
+            playerX < star.x + STAR_SIZE &&
+            playerX + PLAYER_SIZE > star.x &&
+            playerY < star.y + STAR_SIZE &&
+            playerY + PLAYER_SIZE > star.y;
+
+          if (isColliding) {
+            scoreIncrement = 10;
+            return false;
+          }
+          return true;
+        });
+
+        if (scoreIncrement > 0) {
+          setScore(prev => prev + scoreIncrement);
+        }
+
+        return updatedStars;
+      });
+    }
   };
 
   // Handle swipe gestures
@@ -218,6 +242,12 @@ const GamePlay = ({ navigation, route }) => {
   const handleGameOver = () => {
     setGameOver(true);
     setShowModal(true);
+    setScore(0); // Reset score to 0 when game over
+    
+    // Stop the game loop
+    if (gameLoopRef.current) {
+      cancelAnimationFrame(gameLoopRef.current);
+    }
   };
 
   const handleTryAgain = () => {
@@ -244,7 +274,10 @@ const GamePlay = ({ navigation, route }) => {
           </Pressable>
           <View style={styles.scoreContainer}>
             <Text style={styles.starIcon}>⭐</Text>
-            <Text style={styles.scoreText}>{score}</Text>
+            <Text style={[
+              styles.scoreText,
+              score < 0 && styles.negativeScore
+            ]}>{score}</Text>
           </View>
         </View>
 
@@ -413,6 +446,9 @@ const styles = StyleSheet.create({
   scoreText: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#FF0000',
+  },
+  negativeScore: {
     color: '#FF0000',
   },
   modalOverlay: {

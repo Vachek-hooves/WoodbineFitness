@@ -4,7 +4,7 @@ import CustomGradient from '../../components/Layout/CustomGradient'
 
 const GameLevels = ({ navigation }) => {
   const [currentLevel, setCurrentLevel] = useState(1) // Track the current unlocked level
-  const totalLevels = 1
+  const totalLevels = 10
   const [totalStars, setTotalStars] = useState(0)
 
   const handleLevelPress = (level) => {
@@ -45,8 +45,8 @@ const GameLevels = ({ navigation }) => {
                   styles.buttonInner,
                   isUnlocked ? styles.innerUnlocked : styles.innerLocked,
                 ]}>
-                  {/* <Text style={styles.levelText}>{level}</Text> */}
-                  <Text style={styles.levelText}>Play</Text>
+                  <Text style={styles.levelText}>{level}</Text>
+                  {/* <Text style={styles.levelText}>Play</Text> */}
                 </View>
               </Pressable>
             )
@@ -109,18 +109,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   levelsGrid: {
-    // flexDirection: 'row',
-    // flexWrap: 'wrap',
-    // justifyContent: 'space-between',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     gap: 15,
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex:1
+    // paddingHorizontal: 10,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // flex:1
+    marginTop: '10%',
   },
   levelButton: {
-    width: 140,
-    height: 80,
+    width: 60,
+    height: 60,
     padding: 3,
     borderWidth: 2,
     borderRadius: 20,
