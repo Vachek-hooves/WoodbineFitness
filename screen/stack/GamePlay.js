@@ -37,17 +37,20 @@ const GamePlay = ({ navigation, route }) => {
   const startGame = () => {
     // Initialize platforms with more spread out X positions
     const initialPlatforms = [
-      { x: 0, y: SCREEN_HEIGHT - 150, width: 100 },
-      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 250, width: 100 },
-      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 350, width: 100 },
+      { x: 0, y: SCREEN_HEIGHT - 150, width: 100, hasStar: true },
+      { x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT - 250, width: 100, hasStar: true },
+      { x: SCREEN_WIDTH * 0.8, y: SCREEN_HEIGHT - 350, width: 100, hasStar: true },
     ];
     setPlatforms(initialPlatforms);
 
-    // Initialize stars
-    const initialStars = [
-      { x: 150, y: SCREEN_HEIGHT - 300 },
-      { x: 300, y: SCREEN_HEIGHT - 400 },
-    ];
+    // Initialize stars based on platforms
+    const initialStars = initialPlatforms
+      .filter(platform => platform.hasStar)
+      .map(platform => ({
+        x: platform.x + platform.width / 2 - STAR_SIZE / 2, // Center star on platform
+        y: platform.y - 60, // Position star above platform
+        collected: false
+      }));
     setStars(initialStars);
 
     // Initialize birds
@@ -100,11 +103,42 @@ const GamePlay = ({ navigation, route }) => {
         newPlatforms.push({
           x: SCREEN_WIDTH, // Start from right edge
           y: Math.random() * (SCREEN_HEIGHT - 400) + 150, // Random height
-          width: 100
+          width: 100,
+          hasStar: Math.random() > 0.5 // 50% chance of having a star
         });
       }
 
       return newPlatforms;
+    });
+
+    // Update stars positions based on platform movement
+    setStars(prevStars => {
+      // Move existing stars left
+      const movedStars = prevStars
+        .filter(star => !star.collected)
+        .map(star => ({
+          ...star,
+          x: star.x - 2 // Move at same speed as platforms
+        }));
+
+      // Add new stars for new platforms
+      const platformsWithNewStars = platforms
+        .filter(platform => platform.hasStar && 
+          !prevStars.some(star => 
+            Math.abs(star.x - (platform.x + platform.width/2)) < 10
+          ));
+
+      const newStars = platformsWithNewStars.map(platform => ({
+        x: platform.x + platform.width/2 - STAR_SIZE/2,
+        y: platform.y - 60,
+        collected: false
+      }));
+
+      // Remove stars that are off screen
+      const visibleStars = [...movedStars, ...newStars]
+        .filter(star => star.x > -STAR_SIZE);
+
+      return visibleStars;
     });
 
     // Move birds
@@ -151,7 +185,9 @@ const GamePlay = ({ navigation, route }) => {
 
   const collectStar = (index) => {
     setScore(prev => prev + 10);
-    setStars(prev => prev.filter((_, i) => i !== index));
+    setStars(prev => prev.map((star, i) => 
+      i === index ? { ...star, collected: true } : star
+    ));
   };
 
   const handleGameOver = () => {
@@ -263,7 +299,7 @@ const styles = StyleSheet.create({
   },
   player: {
     width: PLAYER_SIZE,
-    height: PLAYER_SIZE,
+    height:60,
     position: 'absolute',
   },
   platform: {
@@ -289,6 +325,6 @@ const styles = StyleSheet.create({
   },
   swipeIcon: {
     width: 50,
-    height: 50,
+    height: 120,
   },
 });
