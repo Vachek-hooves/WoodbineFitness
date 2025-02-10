@@ -12,7 +12,7 @@ const BIRD_SIZE = 40;
 const GamePlay = ({ navigation, route }) => {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const playerPosition = useRef(new Animated.ValueXY({ x: 50, y: SCREEN_HEIGHT - 200 })).current;
+  const playerPosition = useRef(new Animated.ValueXY({ x: 50, y: SCREEN_HEIGHT - 300 })).current;
   const [platforms, setPlatforms] = useState([]);
   const [stars, setStars] = useState([]);
   const [birds, setBirds] = useState([]);
@@ -34,8 +34,8 @@ const GamePlay = ({ navigation, route }) => {
 
     // Initialize stars
     const initialStars = [
-      { x: 100, y: SCREEN_HEIGHT - 300 },
-      { x: 250, y: SCREEN_HEIGHT - 400 },
+      { x: 150, y: SCREEN_HEIGHT - 300 },
+      { x: 300, y: SCREEN_HEIGHT - 400 },
     ];
     setStars(initialStars);
 
