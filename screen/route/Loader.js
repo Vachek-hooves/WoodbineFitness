@@ -2,6 +2,7 @@ import {StyleSheet, Text, View, Animated, Dimensions} from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import CustomGradient from '../../components/Layout/CustomGradient';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const Loader = () => {
   const navigation = useNavigation();
@@ -38,29 +39,31 @@ const Loader = () => {
 
   return (
     <CustomGradient>
-      <View style={styles.container}>
-        <Animated.Image
-          source={require('../../assets/image/logo/logo.png')} // Make sure to add your runner image
-          style={[
-            styles.runnerImage,
-            {
-              transform: [{scale}],
-            },
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.progressBar,
-            {
-              transform: [
-                {
-                  scaleX: progress,
-                },
-              ],
-            },
-          ]}
-        />
-      </View>
+      <MainLayout>
+        <View style={styles.container}>
+          <Animated.Image
+            source={require('../../assets/image/logo/logo.png')} // Make sure to add your runner image
+            style={[
+              styles.runnerImage,
+              {
+                transform: [{scale}],
+              },
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.progressBar,
+              {
+                transform: [
+                  {
+                    scaleX: progress,
+                  },
+                ],
+              },
+            ]}
+          />
+        </View>
+      </MainLayout>
     </CustomGradient>
   );
 };

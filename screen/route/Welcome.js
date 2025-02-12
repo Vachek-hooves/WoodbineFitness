@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const Welcome = ({navigation}) => {
   const handleBegin = () => {
@@ -15,31 +16,33 @@ const Welcome = ({navigation}) => {
   };
   return (
     <CustomGradient>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.contentContainer}>
-          <Text style={styles.title}>WOODBINE{'\n'}FITNESS</Text>
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>
-            Our mobile app is for those who want to stay active and exercise
-            outdoors 🌿🏃‍♂️. We help you stay in shape 💪 and enjoy nature 🌞 by
-            offering personalized workouts 🏋️‍♂️, diverse sports activities 🚴‍♀️🏄‍♂️,
-            and engaging mini-games 🎮✨.
-          </Text>
-        </View>
+      <MainLayout>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flexGrow: 1}}>
+          <View style={styles.contentContainer}>
+            <Text style={styles.title}>WOODBINE{'\n'}FITNESS</Text>
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>
+              Our mobile app is for those who want to stay active and exercise
+              outdoors 🌿🏃‍♂️. We help you stay in shape 💪 and enjoy nature 🌞 by
+              offering personalized workouts 🏋️‍♂️, diverse sports activities 🚴‍♀️🏄‍♂️,
+              and engaging mini-games 🎮✨.
+            </Text>
+          </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.buttonOuterBorder}
-            onPress={handleBegin}>
-            <View style={styles.buttonInnerBorder}>
-              <Text style={styles.buttonText}>Begin</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.buttonOuterBorder}
+              onPress={handleBegin}>
+              <View style={styles.buttonInnerBorder}>
+                <Text style={styles.buttonText}>Begin</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </MainLayout>
     </CustomGradient>
   );
 };

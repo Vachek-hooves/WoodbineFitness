@@ -1,6 +1,7 @@
 import {StyleSheet, Text, View, Pressable, ScrollView} from 'react-native';
 import React, {useState} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const activities = ['Running', 'Cycling', 'Hiking', 'Fitness', 'Yoga'];
 
@@ -19,11 +20,11 @@ const Statistic = ({navigation}) => {
 
   const handleBegin = () => {
     if (activeTab === 'Goal') {
-      navigation.navigate('StatisticGoal', { 
+      navigation.navigate('StatisticGoal', {
         activity: selectedActivity,
       });
     } else {
-      navigation.navigate('StatisticTrain', { 
+      navigation.navigate('StatisticTrain', {
         activity: selectedActivity,
       });
     }
@@ -31,82 +32,85 @@ const Statistic = ({navigation}) => {
 
   return (
     <CustomGradient>
-      <View style={styles.container}>
-        <ScrollView>
-          {/* Top Tabs */}
-          <View style={styles.tabContainer}>
-            <Pressable
-              style={[
-                styles.tabButton,
-                activeTab === 'Goal' && styles.activeTabButton,
-              ]}
-              onPress={() => handleTabPress('Goal')}>
-              <View style={styles.innerBorder}>
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'Goal' && styles.activeTabText,
-                  ]}>
-                  Goal
-                </Text>
-              </View>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.tabButton,
-                activeTab === 'TrainUp' && styles.activeTabButton,
-              ]}
-              onPress={() => handleTabPress('TrainUp')}>
-              <View style={styles.innerBorder}>
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'TrainUp' && styles.activeTabText,
-                  ]}>
-                  TrainUp
-                </Text>
-              </View>
-            </Pressable>
-          </View>
-
-          <Text style={styles.title}>Choose your activity type!</Text>
-
-          {/* Activities Container */}
-          <View style={styles.activitiesContainer}>
-            <Text style={styles.activitiesTitle}>Activities</Text>
-            {activities.map(activity => (
+      <MainLayout>
+        <View style={styles.container}>
+          <ScrollView>
+            {/* Top Tabs */}
+            <View style={styles.tabContainer}>
               <Pressable
-                key={activity}
                 style={[
-                  styles.activityButton,
-                  selectedActivity === activity && styles.activeActivityButton,
+                  styles.tabButton,
+                  activeTab === 'Goal' && styles.activeTabButton,
                 ]}
-                onPress={() => handleActivitySelect(activity)}>
+                onPress={() => handleTabPress('Goal')}>
                 <View style={styles.innerBorder}>
                   <Text
                     style={[
-                      styles.activityText,
-                      selectedActivity === activity &&
-                        styles.activeActivityText,
+                      styles.tabText,
+                      activeTab === 'Goal' && styles.activeTabText,
                     ]}>
-                    {activity}
+                    Goal
                   </Text>
                 </View>
               </Pressable>
-            ))}
-          </View>
 
-          {/* Begin Button */}
-          {selectedActivity && (
-            <Pressable style={styles.beginButton} onPress={handleBegin}>
-              <View style={styles.innerBorder}>
-                <Text style={styles.beginText}>Begin</Text>
-              </View>
-            </Pressable>
-          )}
-        </ScrollView>
-      </View>
+              <Pressable
+                style={[
+                  styles.tabButton,
+                  activeTab === 'TrainUp' && styles.activeTabButton,
+                ]}
+                onPress={() => handleTabPress('TrainUp')}>
+                <View style={styles.innerBorder}>
+                  <Text
+                    style={[
+                      styles.tabText,
+                      activeTab === 'TrainUp' && styles.activeTabText,
+                    ]}>
+                    TrainUp
+                  </Text>
+                </View>
+              </Pressable>
+            </View>
+
+            <Text style={styles.title}>Choose your activity type!</Text>
+
+            {/* Activities Container */}
+            <View style={styles.activitiesContainer}>
+              <Text style={styles.activitiesTitle}>Activities</Text>
+              {activities.map(activity => (
+                <Pressable
+                  key={activity}
+                  style={[
+                    styles.activityButton,
+                    selectedActivity === activity &&
+                      styles.activeActivityButton,
+                  ]}
+                  onPress={() => handleActivitySelect(activity)}>
+                  <View style={styles.innerBorder}>
+                    <Text
+                      style={[
+                        styles.activityText,
+                        selectedActivity === activity &&
+                          styles.activeActivityText,
+                      ]}>
+                      {activity}
+                    </Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+
+            {/* Begin Button */}
+            {selectedActivity && (
+              <Pressable style={styles.beginButton} onPress={handleBegin}>
+                <View style={styles.innerBorder}>
+                  <Text style={styles.beginText}>Begin</Text>
+                </View>
+              </Pressable>
+            )}
+          </ScrollView>
+        </View>
+      </MainLayout>
     </CustomGradient>
   );
 };

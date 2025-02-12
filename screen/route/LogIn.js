@@ -12,6 +12,7 @@ import React, {useState, useEffect} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 import {launchImageLibrary} from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const LogIn = ({navigation}) => {
   const [photo, setPhoto] = useState(null);
@@ -101,53 +102,55 @@ const LogIn = ({navigation}) => {
 
   return (
     <CustomGradient>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.container}>
-          <TouchableOpacity
-            style={styles.deleteAccount}
-            onPress={handleDeleteAccount}>
-            <Text style={styles.deleteText}>Delete account</Text>
-          </TouchableOpacity>
+      <MainLayout>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flexGrow: 1}}>
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.deleteAccount}
+              onPress={handleDeleteAccount}>
+              <Text style={styles.deleteText}>Delete account</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.imageContainer}
-            onPress={handleImagePicker}>
-            <View style={styles.imageWrapper}>
-              {photo ? (
-                <Image source={{uri: photo}} style={styles.profileImage} />
-              ) : (
-                <Image
-                  source={require('../../assets/icons/camera.png')}
-                  style={styles.cameraIcon}
-                />
-              )}
+            <TouchableOpacity
+              style={styles.imageContainer}
+              onPress={handleImagePicker}>
+              <View style={styles.imageWrapper}>
+                {photo ? (
+                  <Image source={{uri: photo}} style={styles.profileImage} />
+                ) : (
+                  <Image
+                    source={require('../../assets/icons/camera.png')}
+                    style={styles.cameraIcon}
+                  />
+                )}
+              </View>
+              <Text style={styles.uploadText}>Upload Your Photo</Text>
+            </TouchableOpacity>
+
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Nickname"
+                placeholderTextColor="#666"
+                value={nickname}
+                onChangeText={handleNicknameChange}
+              />
             </View>
-            <Text style={styles.uploadText}>Upload Your Photo</Text>
-          </TouchableOpacity>
 
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Nickname"
-              placeholderTextColor="#666"
-              value={nickname}
-              onChangeText={handleNicknameChange}
-            />
+            <TouchableOpacity
+              style={styles.buttonOuterBorder}
+              onPress={handleCreateAccount}>
+              <View style={styles.buttonInnerBorder}>
+                <Text style={styles.buttonText}>
+                  {isAccountCreated ? 'Continue' : 'Create account'}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity
-            style={styles.buttonOuterBorder}
-            onPress={handleCreateAccount}>
-            <View style={styles.buttonInnerBorder}>
-              <Text style={styles.buttonText}>
-                {isAccountCreated ? 'Continue' : 'Create account'}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </MainLayout>
     </CustomGradient>
   );
 };

@@ -1,6 +1,7 @@
 import {StyleSheet, Text, View, Pressable, ScrollView} from 'react-native';
 import React from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const activities = [
   {name: 'Running', icon: '🏃', title: 'Running'},
@@ -20,22 +21,24 @@ const Plan = ({navigation}) => {
 
   return (
     <CustomGradient>
-      <ScrollView>
-        <View style={styles.container}>
-          {activities.map(activity => (
-            <Pressable
-              key={activity.name}
-              style={styles.activityButton}
-              onPress={() => handleActivityPress(activity)}>
-              <View style={styles.buttonInner}>
-                <Text style={styles.buttonText}>
-                  {activity.icon} {activity.name}
-                </Text>
-              </View>
-            </Pressable>
-          ))}
-        </View>
-      </ScrollView>
+      <MainLayout>
+        <ScrollView>
+          <View style={styles.container}>
+            {activities.map(activity => (
+              <Pressable
+                key={activity.name}
+                style={styles.activityButton}
+                onPress={() => handleActivityPress(activity)}>
+                <View style={styles.buttonInner}>
+                  <Text style={styles.buttonText}>
+                    {activity.icon} {activity.name}
+                  </Text>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </ScrollView>
+      </MainLayout>
     </CustomGradient>
   );
 };

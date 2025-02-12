@@ -1,8 +1,15 @@
-import {StyleSheet, Text, View, Pressable, Image,ScrollView} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Image,
+  ScrollView,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
 import {useStore} from '../../store/context';
-
+import MainLayout from '../../components/Layout/MainLayout';
 
 const Game = ({navigation}) => {
   const {highScore, loadHighScore} = useStore();
@@ -16,41 +23,45 @@ const Game = ({navigation}) => {
 
   return (
     <CustomGradient>
-      <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false} >
-        {/* Header Icons */}
-        <View style={styles.header}>
-          {/* <Pressable style={styles.iconButton}>
+      <MainLayout>
+        <View style={styles.container}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Header Icons */}
+            <View style={styles.header}>
+              {/* <Pressable style={styles.iconButton}>
             <Text style={styles.iconText}>🔊</Text>
           </Pressable>
           <Pressable style={styles.iconButton}>
             <Text style={styles.iconText}>🏆</Text>
           </Pressable> */}
+            </View>
+
+            {/* Game Logo */}
+            <Image
+              source={require('../../assets/image/game/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+
+            {/* Game Description */}
+            <Text style={styles.description}>
+              Dive into an exciting adventure across platforms, collecting
+              stars! ✨ A simple yet engaging gameplay: control your character
+              with swipe-up and swipe-down actions, jump, and avoid birds 🕊️.
+              Each level brings new goals and increasingly challenging tasks 🎯.
+              How many stars can you collect? Complete all the levels and become
+              a master! 🏆
+            </Text>
+
+            {/* Start Game Button */}
+            <Pressable style={styles.startButton} onPress={handleStartGame}>
+              <View style={styles.buttonInner}>
+                <Text style={styles.buttonText}>Let's Go!</Text>
+              </View>
+            </Pressable>
+          </ScrollView>
         </View>
-
-        {/* Game Logo */}
-        <Image
-          source={require('../../assets/image/game/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-
-        {/* Game Description */}
-        <Text style={styles.description}>
-          Dive into an exciting adventure across platforms, collecting stars! ✨
-          A simple yet engaging gameplay: control your character with swipe-up
-          and swipe-down actions, jump, and avoid birds 🕊️. Each level brings
-          new goals and increasingly challenging tasks 🎯. How many stars can
-          you collect? Complete all the levels and become a master! 🏆
-        </Text>
-
-        {/* Start Game Button */}
-        <Pressable style={styles.startButton} onPress={handleStartGame}>
-          <View style={styles.buttonInner}>
-            <Text style={styles.buttonText}>Let's Go!</Text>
-          </View>
-        </Pressable></ScrollView>
-      </View>
+      </MainLayout>
     </CustomGradient>
   );
 };

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import CustomGradient from '../../components/Layout/CustomGradient';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const activities = [
   {
@@ -43,33 +44,37 @@ const activities = [
   },
 ];
 
-const Activities = ({ navigation }) => {
+const Activities = ({navigation}) => {
   return (
     <CustomGradient>
-      <ScrollView>
-        <View style={styles.container}>
-          <View style={styles.gridContainer}>
-            {activities.map(activity => (
-              <TouchableOpacity
-                key={activity.id}
-                style={styles.activityCard}
-                onPress={() => navigation.navigate('ActivitiesInstraction', {
-                  activityId: activity.id
-                })}>
-                <View style={styles.imageContainer}>
-                  <Image
-                    source={activity.image}
-                    style={styles.activityImage}
-                    // resizeMode="cover"
-                  />
-                </View>
-                <Text style={styles.activityName}>{activity.name}</Text>
-              </TouchableOpacity>
-            ))}
+      <MainLayout>
+        <ScrollView>
+          <View style={styles.container}>
+            <View style={styles.gridContainer}>
+              {activities.map(activity => (
+                <TouchableOpacity
+                  key={activity.id}
+                  style={styles.activityCard}
+                  onPress={() =>
+                    navigation.navigate('ActivitiesInstraction', {
+                      activityId: activity.id,
+                    })
+                  }>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      source={activity.image}
+                      style={styles.activityImage}
+                      // resizeMode="cover"
+                    />
+                  </View>
+                  <Text style={styles.activityName}>{activity.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-        <View style={{height: 100}}/>
-      </ScrollView>
+          <View style={{height: 100}} />
+        </ScrollView>
+      </MainLayout>
     </CustomGradient>
   );
 };
